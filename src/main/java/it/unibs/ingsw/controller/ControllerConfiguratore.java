@@ -205,6 +205,12 @@ public class ControllerConfiguratore {
         archivioCategorie.salvaTutte(categorie);
     }
 
+    // post: restituisce true se non esiste ancora nessun configuratore registrato nel sistema,
+    //       ovvero se primoAccesso() può essere chiamato senza eccezione
+    public boolean isPrimoAccesso() {
+        return configuratori.isEmpty();
+    }
+
     // post: restituisce una vista immutabile della lista categorie in memoria
     public List<Categoria> getCategorie() {
         return List.copyOf(categorie);
