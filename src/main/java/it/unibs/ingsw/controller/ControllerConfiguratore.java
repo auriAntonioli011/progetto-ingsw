@@ -1,16 +1,22 @@
 package it.unibs.ingsw.controller;
 
+import it.unibs.ingsw.model.Bacheca;
 import it.unibs.ingsw.model.Campo;
 import it.unibs.ingsw.model.Categoria;
 import it.unibs.ingsw.model.ConfigurazioneGlobale;
 import it.unibs.ingsw.model.Configuratore;
+import it.unibs.ingsw.model.Proposta;
+import it.unibs.ingsw.model.StatoProposta;
 import it.unibs.ingsw.persistence.ArchivioCategorie;
 import it.unibs.ingsw.persistence.ArchivioConfigurazione;
 import it.unibs.ingsw.persistence.ArchivioConfiguratori;
+import it.unibs.ingsw.persistence.ArchivioProposte;
+import it.unibs.ingsw.util.FornitoreTempo;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -23,33 +29,52 @@ public class ControllerConfiguratore {
     private final ArchivioConfigurazione archivioConfigurazione;
     private final ArchivioCategorie archivioCategorie;
     private final ArchivioConfiguratori archivioConfiguratori;
+    // V2: nuovo archivio dedicato alle proposte APERTE (le VALIDA non si persistono).
+    private final ArchivioProposte archivioProposte;
+    // V2: iniettato per evitare LocalDate.now() diretto nella logica di dominio
+    // (creazione, validazione, pubblicazione di proposte).
+    private final FornitoreTempo fornitoreTempo;
 
     private ConfigurazioneGlobale configurazioneGlobale;
     private List<Categoria> categorie;
     private List<Configuratore> configuratori;
+    // V2: contiene sia proposte VALIDA (non persistite) sia APERTE (persistite).
+    // Le APERTE vengono ricaricate dal disco all'avvio; le VALIDA sono solo di sessione.
+    private List<Proposta> proposte;
     private Configuratore configuratoreLoggato;
 
-    // pre:  archivioConfigurazione != null && archivioCategorie != null
-    //       && archivioConfiguratori != null
-    // post: configurazioneGlobale, categorie e configuratori sono caricati dagli archivi;
+    // pre:  tutti i parametri != null
+    // post: configurazioneGlobale, categorie, configuratori e proposte APERTE sono caricati dagli archivi;
     //       configuratoreLoggato == null
+    // motivazione: rispetto alla firma V1, l'aggiunta di archivioProposte e fornitoreTempo è
+    // necessaria per abilitare V2 (creazione/pubblicazione proposte) mantenendo lo stesso pattern
+    // di iniezione già usato per gli altri archivi. Il comportamento V1 è invariato.
     public ControllerConfiguratore(ArchivioConfigurazione archivioConfigurazione,
                                     ArchivioCategorie archivioCategorie,
-                                    ArchivioConfiguratori archivioConfiguratori) throws IOException {
+                                    ArchivioConfiguratori archivioConfiguratori,
+                                    ArchivioProposte archivioProposte,
+                                    FornitoreTempo fornitoreTempo) throws IOException {
         if (archivioConfigurazione == null)
             throw new IllegalArgumentException("archivioConfigurazione non può essere null");
         if (archivioCategorie == null)
             throw new IllegalArgumentException("archivioCategorie non può essere null");
         if (archivioConfiguratori == null)
             throw new IllegalArgumentException("archivioConfiguratori non può essere null");
+        if (archivioProposte == null)
+            throw new IllegalArgumentException("archivioProposte non può essere null");
+        if (fornitoreTempo == null)
+            throw new IllegalArgumentException("fornitoreTempo non può essere null");
 
         this.archivioConfigurazione = archivioConfigurazione;
         this.archivioCategorie = archivioCategorie;
         this.archivioConfiguratori = archivioConfiguratori;
+        this.archivioProposte = archivioProposte;
+        this.fornitoreTempo = fornitoreTempo;
 
         this.configurazioneGlobale = archivioConfigurazione.carica();
         this.categorie = archivioCategorie.caricaTutte();
         this.configuratori = archivioConfiguratori.caricaTutti();
+        this.proposte = archivioProposte.caricaTutte();
         this.configuratoreLoggato = null;
     }
 
@@ -226,6 +251,68 @@ public class ControllerConfiguratore {
     // post: restituisce l'istanza corrente di ConfigurazioneGlobale
     public ConfigurazioneGlobale getConfigurazioneGlobale() {
         return configurazioneGlobale;
+    }
+
+    // -------------------------------------------------------------------------
+    // V2 — Proposte
+    // -------------------------------------------------------------------------
+
+    // pre:  categoria != null && la categoria appartiene a getCategorie()
+    //       && valori != null (può essere vuota o parziale — sarà valida() a giudicare)
+    // post: viene creata una nuova Proposta con quei valori, è invocata valida() (che può
+    //       promuoverla a StatoProposta.VALIDA), la proposta è aggiunta alla lista in memoria
+    //       ma NON viene persistita (requisito V2: solo APERTA su disco);
+    //       restituisce la proposta creata (l'utente può leggerne lo stato via getStato()).
+    public Proposta creaProposta(Categoria categoria, Map<String, String> valori) {
+        if (categoria == null)
+            throw new IllegalArgumentException("categoria non può essere null");
+        if (valori == null)
+            throw new IllegalArgumentException("valori non può essere null");
+        if (!categorie.contains(categoria))
+            throw new IllegalArgumentException(
+                    "la categoria '" + categoria.getNome() + "' non è tra quelle registrate");
+
+        Proposta p = new Proposta(categoria, valori);
+        p.valida(fornitoreTempo, configurazioneGlobale);
+        proposte.add(p);
+        return p;
+    }
+
+    // pre:  proposta != null && proposta ∈ proposte
+    // post: se proposta.getStato() != VALIDA lancia IllegalStateException,
+    //       altrimenti proposta.getStato() == APERTA
+    //       && proposta.getDataPubblicazione() == fornitoreTempo.oggi()
+    //       && la lista aggiornata (solo APERTE) è persistita su ArchivioProposte
+    public void richiediPubblicazione(Proposta proposta) throws IOException {
+        if (proposta == null)
+            throw new IllegalArgumentException("proposta non può essere null");
+        if (!proposte.contains(proposta))
+            throw new IllegalArgumentException("proposta non presente tra quelle in memoria");
+        if (proposta.getStato() != StatoProposta.VALIDA)
+            throw new IllegalStateException(
+                    "solo una proposta VALIDA può essere pubblicata");
+
+        proposta.marcaPubblicata(fornitoreTempo.oggi());
+        archivioProposte.salvaTutte(proposte);
+    }
+
+    // post: restituisce una vista immutabile delle proposte con stato VALIDA
+    //       (create nella sessione corrente, non ancora pubblicate)
+    public List<Proposta> getProposteValide() {
+        List<Proposta> risultato = new ArrayList<>();
+        for (Proposta p : proposte) {
+            if (p.getStato() == StatoProposta.VALIDA) risultato.add(p);
+        }
+        return List.copyOf(risultato);
+    }
+
+    // post: restituisce una Bacheca costruita a partire dalle proposte APERTE in memoria
+    public Bacheca getBacheca() {
+        List<Proposta> aperte = new ArrayList<>();
+        for (Proposta p : proposte) {
+            if (p.getStato() == StatoProposta.APERTA) aperte.add(p);
+        }
+        return new Bacheca(aperte);
     }
 
     // --- helper privati ---

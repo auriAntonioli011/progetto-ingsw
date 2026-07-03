@@ -4,6 +4,8 @@ import it.unibs.ingsw.controller.ControllerConfiguratore;
 import it.unibs.ingsw.persistence.ArchivioCategorie;
 import it.unibs.ingsw.persistence.ArchivioConfigurazione;
 import it.unibs.ingsw.persistence.ArchivioConfiguratori;
+import it.unibs.ingsw.persistence.ArchivioProposte;
+import it.unibs.ingsw.util.TempoReale;
 import it.unibs.ingsw.view.ViewConfiguratore;
 
 import java.io.IOException;
@@ -16,11 +18,14 @@ public class Main {
             ArchivioConfigurazione archivioConfigurazione = new ArchivioConfigurazione();
             ArchivioCategorie archivioCategorie = new ArchivioCategorie();
             ArchivioConfiguratori archivioConfiguratori = new ArchivioConfiguratori();
+            ArchivioProposte archivioProposte = new ArchivioProposte();
 
             ControllerConfiguratore controller = new ControllerConfiguratore(
                     archivioConfigurazione,
                     archivioCategorie,
-                    archivioConfiguratori
+                    archivioConfiguratori,
+                    archivioProposte,
+                    new TempoReale()
             );
 
             Scanner scanner = new Scanner(System.in);

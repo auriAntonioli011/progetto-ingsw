@@ -1,15 +1,20 @@
 package it.unibs.ingsw.view;
 
 import it.unibs.ingsw.controller.ControllerConfiguratore;
+import it.unibs.ingsw.model.Bacheca;
 import it.unibs.ingsw.model.Campo;
 import it.unibs.ingsw.model.Categoria;
 import it.unibs.ingsw.model.ConfigurazioneGlobale;
 import it.unibs.ingsw.model.Configuratore;
+import it.unibs.ingsw.model.Proposta;
+import it.unibs.ingsw.model.StatoProposta;
 import it.unibs.ingsw.model.TipoCampo;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -114,6 +119,9 @@ public class ViewConfiguratore {
             println("  5) Aggiungi campo specifico a categoria");
             println("  6) Rimuovi campo specifico da categoria");
             println("  7) Visualizza categorie e i loro campi");
+            println("  8) Crea proposta");
+            println("  9) Pubblica proposta valida");
+            println(" 10) Visualizza bacheca");
             println("  0) Esci");
 
             switch (leggiIntero("Scelta")) {
@@ -127,6 +135,9 @@ public class ViewConfiguratore {
                 case 5 -> optAggiungiCampoSpecifico();
                 case 6 -> optRimuoviCampoSpecifico();
                 case 7 -> optVisualizzaCategorie();
+                case 8 -> optCreaProposta();
+                case 9 -> optPubblicaPropostaValida();
+                case 10 -> optVisualizzaBacheca();
                 case 0 -> { println("Arrivederci."); return; }
                 default -> println("[AVVISO] Opzione non riconosciuta.");
             }
@@ -245,6 +256,118 @@ public class ViewConfiguratore {
             }
             println("");
         }
+    }
+
+    // -------------------------------------------------------------------------
+    // Opzioni menu V2 — Proposte
+    // -------------------------------------------------------------------------
+
+    private void optCreaProposta() {
+        stampaSezione("CREA PROPOSTA");
+        List<Categoria> categorie = controller.getCategorie();
+        if (categorie.isEmpty()) {
+            println("[AVVISO] Nessuna categoria definita. Crea prima una categoria (opzione 3).");
+            return;
+        }
+        ConfigurazioneGlobale cfg = controller.getConfigurazioneGlobale();
+
+        Categoria scelta = leggiCategoria(categorie);
+        if (scelta == null) return;
+
+        List<Campo> campi = scelta.getTuttiICampi(cfg);
+        if (campi.isEmpty()) {
+            println("[AVVISO] La categoria selezionata non ha campi. Configurare campi base/comuni prima.");
+            return;
+        }
+
+        println("Compila i valori dei campi (Invio per lasciare vuoto un campo facoltativo).");
+        println("Per i campi di tipo DATA usare il formato ISO yyyy-MM-dd (es. 2026-07-15).");
+        Map<String, String> valori = new LinkedHashMap<>();
+        for (Campo c : campi) {
+            String obblig = c.isObbligatorio() ? "[OBBLIGATORIO]" : "[facoltativo]";
+            print("  " + c.getNome() + " (" + c.getTipo() + ") " + obblig + ": ");
+            String v = scanner.nextLine().trim();
+            if (!v.isEmpty()) valori.put(c.getNome(), v);
+        }
+
+        try {
+            Proposta creata = controller.creaProposta(scelta, valori);
+            if (creata.getStato() == StatoProposta.VALIDA) {
+                println("Proposta creata e risulta VALIDA. Puoi pubblicarla dal menu (opzione 9).");
+            } else {
+                println("[AVVISO] Proposta creata ma non ancora VALIDA.");
+                println("        Verifica: campi obbligatori compilati, termine iscrizione > oggi,");
+                println("        data evento >= termine iscrizione + 2 giorni, dataConclusiva >= data evento.");
+                println("        Nomi attesi per i campi data: '" + Proposta.CAMPO_TERMINE_ISCRIZIONE
+                        + "', '" + Proposta.CAMPO_DATA_EVENTO + "', '" + Proposta.CAMPO_DATA_CONCLUSIVA + "'.");
+            }
+        } catch (IllegalArgumentException e) {
+            println("[ERRORE] " + e.getMessage());
+        }
+    }
+
+    private void optPubblicaPropostaValida() {
+        stampaSezione("PUBBLICA PROPOSTA VALIDA");
+        List<Proposta> valide = controller.getProposteValide();
+        if (valide.isEmpty()) {
+            println("[AVVISO] Nessuna proposta VALIDA da pubblicare nella sessione corrente.");
+            return;
+        }
+        println("Proposte VALIDA disponibili:");
+        for (int i = 0; i < valide.size(); i++) {
+            Proposta p = valide.get(i);
+            println("  " + (i + 1) + ") categoria=" + p.getCategoria().getNome()
+                    + "  campi=" + p.getValori().size());
+        }
+        int scelta = leggiIntero("Numero proposta da pubblicare (0 per annullare)");
+        if (scelta == 0) return;
+        if (scelta < 1 || scelta > valide.size()) {
+            println("[AVVISO] Selezione fuori intervallo.");
+            return;
+        }
+        try {
+            controller.richiediPubblicazione(valide.get(scelta - 1));
+            println("Proposta pubblicata (stato APERTA, dataPubblicazione impostata).");
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            println("[ERRORE] " + e.getMessage());
+        } catch (IOException e) {
+            println("[ERRORE I/O] " + e.getMessage());
+        }
+    }
+
+    private void optVisualizzaBacheca() {
+        stampaSezione("BACHECA");
+        Bacheca bacheca = controller.getBacheca();
+        if (bacheca.isVuota()) {
+            println("La bacheca è vuota.");
+            return;
+        }
+        Map<Categoria, List<Proposta>> gruppi = bacheca.raggruppatePerCategoria();
+        for (Map.Entry<Categoria, List<Proposta>> e : gruppi.entrySet()) {
+            println("Categoria: " + e.getKey().getNome());
+            for (Proposta p : e.getValue()) {
+                println("  - pubblicata il " + p.getDataPubblicazione()
+                        + "  (campi valorizzati: " + p.getValori().size() + ")");
+                for (Map.Entry<String, String> v : p.getValori().entrySet()) {
+                    println("      " + v.getKey() + " = " + v.getValue());
+                }
+            }
+            println("");
+        }
+    }
+
+    private Categoria leggiCategoria(List<Categoria> categorie) {
+        println("Categorie disponibili:");
+        for (int i = 0; i < categorie.size(); i++) {
+            println("  " + (i + 1) + ") " + categorie.get(i).getNome());
+        }
+        int scelta = leggiIntero("Numero categoria (0 per annullare)");
+        if (scelta == 0) return null;
+        if (scelta < 1 || scelta > categorie.size()) {
+            println("[AVVISO] Selezione fuori intervallo.");
+            return null;
+        }
+        return categorie.get(scelta - 1);
     }
 
     // -------------------------------------------------------------------------
