@@ -2,6 +2,44 @@
 
 Questo file documenta le scelte implementative del progetto.
 
+## Stato del progetto
+
+### V1 — completata e taggata (`git tag V1`)
+
+**Classi esistenti:**
+
+| Package | Classi |
+|---|---|
+| `model` | `Campo`, `TipoCampo` (enum), `ConfigurazioneGlobale`, `Categoria`, `Utente` (astratta), `Configuratore` |
+| `persistence` | `RepositoryJson<T>` (liste), `RepositoryJsonSingolo<T>` (oggetto singolo), `AdapterLocalDate`, `ArchivioConfigurazione`, `ArchivioCategorie`, `ArchivioConfiguratori` |
+| `controller` | `ControllerConfiguratore` (con `isPrimoAccesso()`) |
+| `view` | `ViewConfiguratore` (unica classe autorizzata a I/O console) |
+| root | `Main` — istanzia archivi, controller, view e chiama `avvia()` |
+
+**Testato manualmente end-to-end (sessione del 2026-07-03):**
+- Primo accesso → scelta credenziali personali → login successivo → persistenza confermata tra riavvii
+- Fissa campi base; tentativo di rifissarli → `[AVVISO]` pulito, nessuno stack trace
+- Campi comuni con conflitto di nome verso un campo base → `[ERRORE]` leggibile
+- Crea categoria; tentativo di creare categoria con nome duplicato → `[ERRORE]` pulito
+- Aggiungi campo specifico a categoria
+- Rimuovi campo specifico da categoria
+- Rimuovi categoria
+- Visualizza categorie e campi (base + comuni + specifici in ordine)
+
+**Non ancora iniziato:**
+- Casi d'uso testuali / UML V1
+- Diagramma delle classi V1
+- V2: creazione proposte, validazione, bacheca, pubblicazione
+
+### Registro delle scelte implementative (da NON rimettere in discussione senza motivo)
+
+- **Credenziali predefinite libere** — non cablate nel codice; l'utente le sceglie al primo avvio.
+- **Gson bypassa i costruttori di validazione** in deserializzazione (accettato per V1: i file JSON sono sempre scritti dall'app stessa).
+- **`ConfigurazioneGlobale` passata come parametro** ai metodi di `Categoria`, mai salvata come campo interno (basso accoppiamento).
+- **`RepositoryJsonSingolo<T>`** creato appositamente per oggetti singoli (`ConfigurazioneGlobale`) invece di riusare `RepositoryJson<T>` con liste-wrapper artificiose.
+
+---
+
 ## Project overview
 
 Java 21 Maven project for a Software Engineering course at the University of Brescia (`it.unibs.ingsw`). The entry point is `it.unibs.ingsw.Main`. Gson 2.11.0 is available as a dependency for JSON serialization/deserialization.
