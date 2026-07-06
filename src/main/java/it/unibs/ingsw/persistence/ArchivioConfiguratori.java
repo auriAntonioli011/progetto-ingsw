@@ -12,13 +12,22 @@ import java.util.List;
  */
 public class ArchivioConfiguratori {
 
-    private static final Path PERCORSO = Path.of("data", "configuratori.json");
+    private static final Path PERCORSO_DEFAULT = Path.of("data", "configuratori.json");
 
     private final RepositoryJson<Configuratore> repository;
 
-    // post: repository puntato su data/configuratori.json
+    // post: repository puntato su data/configuratori.json (percorso di produzione)
     public ArchivioConfiguratori() {
-        this.repository = new RepositoryJson<>(PERCORSO, Configuratore.class);
+        this(PERCORSO_DEFAULT);
+    }
+
+    // V3: overload per test/isolamento — permette di scrivere il file altrove
+    // (es. una directory temporanea @TempDir) senza toccare data/ reale.
+    // post: repository puntato su percorsoFile
+    public ArchivioConfiguratori(Path percorsoFile) {
+        if (percorsoFile == null)
+            throw new IllegalArgumentException("percorsoFile non può essere null");
+        this.repository = new RepositoryJson<>(percorsoFile, Configuratore.class);
     }
 
     // post: restituisce la lista di Configuratore letta dal file,

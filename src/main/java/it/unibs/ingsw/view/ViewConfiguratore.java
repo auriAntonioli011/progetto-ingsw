@@ -11,6 +11,8 @@ import it.unibs.ingsw.model.StatoProposta;
 import it.unibs.ingsw.model.TipoCampo;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -122,6 +124,10 @@ public class ViewConfiguratore {
             println("  8) Crea proposta");
             println("  9) Pubblica proposta valida");
             println(" 10) Visualizza bacheca");
+            println(" 11) Visualizza archivio proposte (storico + aderenti)");
+            println(" 12) Imposta/modifica data simulata"
+                    + (controller.isTempoSimulato() ? "  [attualmente: " + controller.getDataCorrente() + "]" : "  [attualmente: tempo reale]"));
+            println(" 13) Rimuovi data simulata (torna a tempo reale al riavvio)");
             println("  0) Esci");
 
             switch (leggiIntero("Scelta")) {
@@ -138,6 +144,9 @@ public class ViewConfiguratore {
                 case 8 -> optCreaProposta();
                 case 9 -> optPubblicaPropostaValida();
                 case 10 -> optVisualizzaBacheca();
+                case 11 -> optVisualizzaArchivio();
+                case 12 -> optImpostaDataSimulata();
+                case 13 -> optRimuoviDataSimulata();
                 case 0 -> { println("Arrivederci."); return; }
                 default -> println("[AVVISO] Opzione non riconosciuta.");
             }
@@ -353,6 +362,82 @@ public class ViewConfiguratore {
                 }
             }
             println("");
+        }
+    }
+
+    private void optVisualizzaArchivio() {
+        stampaSezione("ARCHIVIO PROPOSTE (STORICO + ADERENTI)");
+        List<Proposta> archivio = controller.getArchivioProposte();
+        if (archivio.isEmpty()) {
+            println("Nessuna proposta in archivio.");
+            return;
+        }
+        for (Proposta p : archivio) {
+            println("Categoria: " + p.getCategoria().getNome() + "  |  Stato: " + p.getStato());
+            println("  Pubblicata il: " + p.getDataPubblicazione());
+            println("  Storico stati:");
+            List<Proposta.VoceStorico> storico = p.getStorico();
+            if (storico.isEmpty()) {
+                println("    (nessuna transizione registrata)");
+            } else {
+                for (Proposta.VoceStorico v : storico) {
+                    println("    - " + v.stato() + " il " + v.data());
+                }
+            }
+            List<String> aderenti = p.getAderenti();
+            println("  Aderenti (" + aderenti.size() + "):");
+            if (aderenti.isEmpty()) {
+                println("    (nessun aderente)");
+            } else {
+                for (String u : aderenti) {
+                    println("    - " + u);
+                }
+            }
+            println("");
+        }
+    }
+
+    private void optImpostaDataSimulata() {
+        stampaSezione("IMPOSTA DATA SIMULATA");
+        println("Data attuale: " + controller.getDataCorrente()
+                + (controller.isTempoSimulato() ? " (simulata)" : " (tempo reale)"));
+        while (true) {
+            String s = leggiStringa("Nuova data simulata (yyyy-MM-dd)");
+            try {
+                LocalDate nuova = LocalDate.parse(s);
+                boolean applicataAdesso = controller.impostaDataSimulata(nuova);
+                if (applicataAdesso) {
+                    println("Data simulata aggiornata a " + nuova
+                            + " ed è già attiva in questa sessione.");
+                } else {
+                    println("Data simulata salvata (" + nuova + "). Verrà applicata"
+                            + " al prossimo riavvio dell'applicazione.");
+                }
+                return;
+            } catch (DateTimeParseException e) {
+                println("[AVVISO] Formato non valido, usa yyyy-MM-dd (es. 2026-08-15).");
+            } catch (IllegalArgumentException e) {
+                println("[ERRORE] " + e.getMessage());
+                return;
+            } catch (IOException e) {
+                println("[ERRORE I/O] " + e.getMessage());
+                return;
+            }
+        }
+    }
+
+    private void optRimuoviDataSimulata() {
+        stampaSezione("RIMUOVI DATA SIMULATA");
+        try {
+            controller.rimuoviDataSimulata();
+            if (controller.isTempoSimulato()) {
+                println("File data/tempo.json rimosso. In questa sessione il tempo"
+                        + " resta simulato: al prossimo riavvio verrà usato il tempo reale.");
+            } else {
+                println("Nessuna data simulata attiva. Nessuna modifica effettuata.");
+            }
+        } catch (IOException e) {
+            println("[ERRORE I/O] " + e.getMessage());
         }
     }
 

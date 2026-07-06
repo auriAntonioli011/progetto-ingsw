@@ -11,9 +11,13 @@ import it.unibs.ingsw.persistence.ArchivioCategorie;
 import it.unibs.ingsw.persistence.ArchivioConfigurazione;
 import it.unibs.ingsw.persistence.ArchivioConfiguratori;
 import it.unibs.ingsw.persistence.ArchivioProposte;
+import it.unibs.ingsw.persistence.ArchivioTempoSimulato;
 import it.unibs.ingsw.util.FornitoreTempo;
+import it.unibs.ingsw.util.TempoSimulato;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +38,9 @@ public class ControllerConfiguratore {
     // V2: iniettato per evitare LocalDate.now() diretto nella logica di dominio
     // (creazione, validazione, pubblicazione di proposte).
     private final FornitoreTempo fornitoreTempo;
+    // V3: archivio della data simulata per la "modalità configuratore" (§ REGISTRO_PROGETTO.md).
+    // Serve a persistere/rimuovere data/tempo.json che Main legge all'avvio.
+    private final ArchivioTempoSimulato archivioTempoSimulato;
 
     private ConfigurazioneGlobale configurazioneGlobale;
     private List<Categoria> categorie;
@@ -53,6 +60,7 @@ public class ControllerConfiguratore {
                                     ArchivioCategorie archivioCategorie,
                                     ArchivioConfiguratori archivioConfiguratori,
                                     ArchivioProposte archivioProposte,
+                                    ArchivioTempoSimulato archivioTempoSimulato,
                                     FornitoreTempo fornitoreTempo) throws IOException {
         if (archivioConfigurazione == null)
             throw new IllegalArgumentException("archivioConfigurazione non può essere null");
@@ -62,6 +70,8 @@ public class ControllerConfiguratore {
             throw new IllegalArgumentException("archivioConfiguratori non può essere null");
         if (archivioProposte == null)
             throw new IllegalArgumentException("archivioProposte non può essere null");
+        if (archivioTempoSimulato == null)
+            throw new IllegalArgumentException("archivioTempoSimulato non può essere null");
         if (fornitoreTempo == null)
             throw new IllegalArgumentException("fornitoreTempo non può essere null");
 
@@ -69,6 +79,7 @@ public class ControllerConfiguratore {
         this.archivioCategorie = archivioCategorie;
         this.archivioConfiguratori = archivioConfiguratori;
         this.archivioProposte = archivioProposte;
+        this.archivioTempoSimulato = archivioTempoSimulato;
         this.fornitoreTempo = fornitoreTempo;
 
         this.configurazioneGlobale = archivioConfigurazione.carica();
@@ -313,6 +324,70 @@ public class ControllerConfiguratore {
             if (p.getStato() == StatoProposta.APERTA) aperte.add(p);
         }
         return new Bacheca(aperte);
+    }
+
+    // -------------------------------------------------------------------------
+    // V3 — Archivio proposte (storico stati + aderenti)
+    // -------------------------------------------------------------------------
+
+    // post: restituisce una vista immutabile di tutte le proposte in stato "post-validazione"
+    //       (APERTA, CONFERMATA, ANNULLATA, CONCLUSA), utilizzata dalla view per mostrare
+    //       lo storico degli stati e la lista aderenti a fini di consultazione.
+    //       Sono escluse le bozze VALIDA (di sessione) e le proposte non ancora validate.
+    public List<Proposta> getArchivioProposte() {
+        List<Proposta> risultato = new ArrayList<>();
+        for (Proposta p : proposte) {
+            StatoProposta s = p.getStato();
+            if (s == StatoProposta.APERTA
+                    || s == StatoProposta.CONFERMATA
+                    || s == StatoProposta.ANNULLATA
+                    || s == StatoProposta.CONCLUSA) {
+                risultato.add(p);
+            }
+        }
+        return List.copyOf(risultato);
+    }
+
+    // -------------------------------------------------------------------------
+    // V3 — Data simulata (modalità configuratore)
+    // -------------------------------------------------------------------------
+
+    // post: restituisce la data "corrente" secondo il fornitoreTempo attivo in
+    //       questa sessione; utile alla view per mostrare all'utente quale data
+    //       stiamo usando prima di offrirgli di modificarla.
+    public LocalDate getDataCorrente() {
+        return fornitoreTempo.oggi();
+    }
+
+    // post: restituisce true se il fornitoreTempo di questa sessione è
+    //       TempoSimulato (i.e., data/tempo.json esisteva all'avvio),
+    //       false altrimenti (TempoReale)
+    public boolean isTempoSimulato() {
+        return fornitoreTempo instanceof TempoSimulato;
+    }
+
+    // pre:  nuovaData != null
+    // post: data/tempo.json contiene nuovaData. Se il fornitoreTempo di questa
+    //       sessione è già TempoSimulato, viene aggiornato in-place così
+    //       l'effetto è immediato; altrimenti la modifica si applicherà solo al
+    //       prossimo riavvio (Main leggerà il file e istanzierà TempoSimulato).
+    //       Restituisce true se il cambio è già attivo in questa sessione.
+    public boolean impostaDataSimulata(LocalDate nuovaData) throws IOException {
+        if (nuovaData == null)
+            throw new IllegalArgumentException("nuovaData non può essere null");
+        archivioTempoSimulato.salvaDataSimulata(nuovaData);
+        if (fornitoreTempo instanceof TempoSimulato ts) {
+            ts.impostaData(nuovaData.atTime(LocalTime.MIDNIGHT));
+            return true;
+        }
+        return false;
+    }
+
+    // post: data/tempo.json rimosso. Il "downgrade" a TempoReale ha effetto solo
+    //       al prossimo riavvio (in questa sessione fornitoreTempo resta quello
+    //       istanziato da Main).
+    public void rimuoviDataSimulata() throws IOException {
+        archivioTempoSimulato.rimuoviDataSimulata();
     }
 
     // --- helper privati ---
