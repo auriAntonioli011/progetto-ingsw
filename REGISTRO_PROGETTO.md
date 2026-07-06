@@ -189,7 +189,7 @@ Dettaglio esiti (tutti PASS):
 **Non ancora iniziato:**
 - Casi d'uso testuali / UML V3
 - Diagramma delle classi V3
-- V4: gestione fattori di conversione tra categorie, calcolo compatibilità scambio
+- V4: disdetta iscrizione (fruitore) + ritiro proposta (configuratore)
 
 ### Registro delle scelte implementative — aggiunte V3
 
@@ -200,3 +200,62 @@ Dettaglio esiti (tutti PASS):
 - **Motore transizioni prima della scelta ruolo.** `Main` istanzia `ControllerFruitore` (con caricamento fruitori) prima del prompt Configuratore/Fruitore e invoca `inizializzaSessione()` a monte. Effetto: le notifiche per transizioni di stato vengono depositate nei `SpazioPersonale` dei fruitori e persistite in `fruitori.json` indipendentemente da chi (o se qualcuno) si logga. Se poi l'utente sceglie Configuratore, `ControllerConfiguratore` viene istanziato DOPO — legge quindi da `data/proposte.json` già aggiornato. Test #12 verifica esplicitamente questo invariante.
 - **Overload di costruttore su tutti gli archivi che accetta un `Path` alternativo.** Aggiunto in V3 esclusivamente per abilitare test isolati con `@TempDir`; il costruttore no-arg legacy (che punta a `data/`) resta il default per la produzione. Modifica non invasiva, retro-compatibile con V1/V2.
 - **`Fruitore` bypassa il flusso "credenziali provvisorie".** Il configuratore ha un primo accesso a due fasi (credenziali predefinite → credenziali personali); il fruitore invece si registra scegliendo direttamente le credenziali definitive. `ControllerFruitore.registra(...)` invoca `Fruitore.confermaCredenzialiPersonali(...)` con gli stessi valori appena dopo la costruzione per portare `credenzialiProvvisorie` a `false`, cosicché downstream (equals/hashCode by username) sia stabile.
+
+### V4 — completata e taggata (`git tag v4`)
+
+**Classi aggiunte:** nessuna nuova classe — V4 è deliberatamente non invasiva, si limita a estendere `StatoProposta`, `Proposta` e i controller.
+
+**Classi estese (solo aggiunte, nessuna modifica a comportamento V1/V2/V3):**
+- `StatoProposta`: aggiunto `RITIRATA` (V3: VALIDA, APERTA, CONFERMATA, ANNULLATA, CONCLUSA)
+- `Proposta`: nuovi `disdici(Fruitore, FornitoreTempo)` e `ritira(FornitoreTempo)`; il metodo privato `applicaTransizione(StatoProposta, LocalDate)` già introdotto in V3 viene riusato anche dal ritiro (medesimo protocollo "cambia stato + appende storico + snapshot + notifica Observer")
+- `ControllerFruitore`: nuovo `disdici(Proposta)` con persistenza di `proposte.json` (aderenti aggiornati)
+- `ControllerConfiguratore`: nuovi `getProposteRitirabili()` e `ritiraProposta(Proposta)`; costruttore esteso con `ArchivioFruitori` (necessario per persistere le notifiche di ritiro nei `SpazioPersonale` dei fruitori aderenti); ricollegamento osservatori accodato al costruttore
+- `ViewFruitore`: nuova voce menu 5 ("Disdici iscrizione a una proposta")
+- `ViewConfiguratore`: nuova voce menu 14 ("Ritira una proposta (APERTA o CONFERMATA)")
+- `Main`: costruzione `ControllerConfiguratore` aggiornata al nuovo costruttore (`ArchivioFruitori` passato in ingresso)
+
+**Testato con suite JUnit 5 (sessione del 2026-07-06, 33 test verdi totali):**
+- `ChecklistV4Test` (13 test) copre disdetta + ritiro + integrazione persistenza
+- `ChecklistV3Test` (14) + `RegressioneV1V2Test` (6) restano verdi — regressione confermata
+
+Dettaglio esiti V4 (tutti PASS):
+
+*Disdetta:*
+- disdetta entro il termine → aderenti torna vuoto; lo storico NON registra l'evento (la disdetta non è una transizione di `StatoProposta`)
+- disdetta oltre il termine → `IllegalStateException`, aderenti invariati
+- ri-iscrizione dopo disdetta consentita entro il termine
+- `disdici` su proposta non più APERTA (es. dopo `ritira`) → rifiutata (interpretazione Nota 10)
+- `disdici` di fruitore non iscritto → `IllegalStateException` "non risulta iscritto"
+
+*Ritiro:*
+- ritiro APERTA prima del giorno evento → stato `RITIRATA`, aderenti congelati, notifica recapitata a tutti gli aderenti, snapshot valori completo (Data, Ora, Luogo, Quota, ...)
+- ritiro CONFERMATA prima del giorno evento → stato `RITIRATA`, aderente riceve in sequenza notifica CONFERMATA seguita da notifica RITIRATA
+- ritiro il giorno stesso dell'evento (`oggi == Data`) → rifiutato
+- ritiro su stato non ammesso (ANNULLATA, CONCLUSA) → rifiutato con motivazione esplicita
+- storico dopo ritiro append-only: `[APERTA@t₀, CONFERMATA@t₁, RITIRATA@t₂]`
+- `RITIRATA` è terminale: `elaboraTransizione` invocato successivamente è no-op (stato, storico, notifiche invariati)
+
+*Integrazione persistenza:*
+- `ControllerConfiguratore.ritiraProposta` persiste `proposte.json` (stato RITIRATA) E `fruitori.json` (notifiche depositate nei `SpazioPersonale`); rilettura dal disco conferma entrambe le scritture
+- `ControllerFruitore.disdici` aggiorna `proposte.json` (aderenti vuoto dopo roundtrip)
+
+**Non ancora iniziato:**
+- Casi d'uso testuali / UML V4
+- Diagramma delle classi V4
+- V5: import batch di categorie, campi e proposte da file (formato JSON, riuso di quello già usato dalla persistenza)
+
+### Registro delle scelte implementative — aggiunte V4
+
+- **Semantica della disdetta: solo su APERTA + entro il "Termine ultimo di iscrizione".** Il testo del progetto parla di "iscrizione a una proposta aperta"; interpretiamo (Nota 10) che l'operazione simmetrica di disdetta si applichi solo quando `stato == APERTA` — dopo un ritiro o una conferma non ha senso rinunciare a un evento che non c'è più o che ha già raggiunto una forma vincolante. Il vincolo temporale è lo stesso di `aderisci`: `oggi <= termine`. La ri-iscrizione successiva è consentita finché entrambi i vincoli restano soddisfatti. Test `disdici_su_stato_non_aperta_rifiutata` e `ri_iscrizione_dopo_disdetta` verificano i due invarianti.
+
+- **La disdetta NON è una transizione di stato: non appare nello storico.** `Proposta.storico` è alimentato solo dai cambi effettivi di `StatoProposta`. Rimuovere un fruitore dalla lista aderenti è una modifica di popolazione, non di stato — coerente con il fatto che la Proposta non "riparte" dopo una disdetta. Verificato in `disdetta_valida_entro_termine`.
+
+- **Ritiro consentito fino alle 23:59 del giorno precedente la "Data" (`oggi.isBefore(dataEvento)`).** Traduzione operativa del requisito "fino al giorno prima dell'evento": a livello di `LocalDate` `isBefore` significa esattamente "giorno strettamente precedente". Il test `ritiro_giorno_evento_rifiutato` verifica il boundary: `oggi == dataEvento` → rifiuto. Applicabile solo a proposte APERTA o CONFERMATA (test `ritiro_stato_non_ammesso_rifiutato` copre ANNULLATA).
+
+- **`RITIRATA` è terminale: aderenti congelati, storico chiuso, motore transizioni no-op.** Dopo il ritiro l'elenco aderenti resta invariato (stesso principio di CONFERMATA/ANNULLATA/CONCLUSA in V3), lo storico si arresta al `VoceStorico(RITIRATA, dataRitiro)` e `elaboraTransizione` non produce alcuna transizione in uscita. Verificato in `ritirata_terminale_per_motore_transizioni`.
+
+- **`ritira` riusa il helper privato `applicaTransizione`.** Il ritiro non è una transizione automatica del motore, ma il protocollo "cambia stato + appende storico + costruisce `Notifica` con snapshot + notifica osservatori" è identico. `applicaTransizione(nuovoStato, oggi)` — già estratto in V3 per `elaboraTransizione` — viene invocato anche da `ritira`. Zero duplicazione del meccanismo Observer/Notifica.
+
+- **`ControllerConfiguratore` ora dipende da `ArchivioFruitori` e ricollega gli osservatori nel costruttore.** In V3 solo `ControllerFruitore` faceva il ricollegamento — sufficiente perché lì avvenivano tutte le transizioni automatiche. In V4 il ritiro è azione del CONFIGURATORE: `ritiraProposta` deve depositare notifiche nei `SpazioPersonale` E persistere `fruitori.json`. Senza ricollegamento osservatori nel costruttore di `ControllerConfiguratore` le Proposta lì caricate avrebbero `osservatori` (transient) vuoto e le notifiche di ritiro si perderebbero silenziosamente. Fix motivato dal test di integrazione `ritira_via_controller_configuratore_persiste_notifiche`. Effetto collaterale: la firma del costruttore è cambiata (nuovo parametro `archivioFruitori`), `Main` è stato aggiornato di conseguenza. Nessun test V3 impattato.
+
+- **`getProposteRitirabili()` filtra a livello di controller.** La view mostra all'utente solo scelte legittime (stato ∈ {APERTA, CONFERMATA} e `oggi < dataEvento`). `Proposta.ritira` fa comunque il double-check e lancia `IllegalStateException` — difesa a due livelli. Se il campo "Data" è assente o malformato la proposta viene omessa silenziosamente (fail-safe, coerente con la scelta V3 su `elaboraTransizione`).
