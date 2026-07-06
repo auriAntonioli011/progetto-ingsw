@@ -1,0 +1,42 @@
+
+Chi sei?
+  1) Configuratore
+  2) Fruitore
+Scelta: 
+----------------------------------------------------
+  ACCESSO FRUITORE
+----------------------------------------------------
+  1) Registrati
+  2) Accedi
+  0) Torna indietro
+Scelta: 
+----------------------------------------------------
+  REGISTRAZIONE FRUITORE
+----------------------------------------------------
+Scegli username: Scegli password: Registrazione completata. Benvenuto, aurora!
+
+----------------------------------------------------
+  MENU FRUITORE — aurora
+----------------------------------------------------
+  1) Visualizza bacheca proposte aperte
+  2) Aderisci a una proposta
+  3) Spazio personale (notifiche + proposte)
+  4) Cancella una notifica
+  0) Esci
+Scelta: 
+----------------------------------------------------
+  ADERISCI A UNA PROPOSTA
+----------------------------------------------------
+Proposte disponibili:
+  1) Sport  aderenti: 0/1
+Numero proposta (0 per annullare): Adesione registrata.
+
+----------------------------------------------------
+  MENU FRUITORE — aurora
+----------------------------------------------------
+  1) Visualizza bacheca proposte aperte
+  2) Aderisci a una proposta
+  3) Spazio personale (notifiche + proposte)
+  4) Cancella una notifica
+  0) Esci
+Scelta: Arrivederci.

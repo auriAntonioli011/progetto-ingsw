@@ -7,9 +7,11 @@ import it.unibs.ingsw.model.ConfigurazioneGlobale;
 import it.unibs.ingsw.model.Configuratore;
 import it.unibs.ingsw.model.Proposta;
 import it.unibs.ingsw.model.StatoProposta;
+import it.unibs.ingsw.model.Fruitore;
 import it.unibs.ingsw.persistence.ArchivioCategorie;
 import it.unibs.ingsw.persistence.ArchivioConfigurazione;
 import it.unibs.ingsw.persistence.ArchivioConfiguratori;
+import it.unibs.ingsw.persistence.ArchivioFruitori;
 import it.unibs.ingsw.persistence.ArchivioProposte;
 import it.unibs.ingsw.persistence.ArchivioTempoSimulato;
 import it.unibs.ingsw.util.FornitoreTempo;
@@ -41,6 +43,12 @@ public class ControllerConfiguratore {
     // V3: archivio della data simulata per la "modalità configuratore" (§ REGISTRO_PROGETTO.md).
     // Serve a persistere/rimuovere data/tempo.json che Main legge all'avvio.
     private final ArchivioTempoSimulato archivioTempoSimulato;
+    // V4: serve per (a) rilegare gli osservatori sulle Proposta di questo controller
+    // così le notifiche prodotte da ritiraProposta raggiungono i SpazioPersonale
+    // e (b) persistere fruitori.json quando una notifica viene depositata.
+    // Vedi javadoc di ritiraProposta per il motivo architetturale.
+    private final ArchivioFruitori archivioFruitori;
+    private List<Fruitore> fruitori;
 
     private ConfigurazioneGlobale configurazioneGlobale;
     private List<Categoria> categorie;
@@ -60,6 +68,7 @@ public class ControllerConfiguratore {
                                     ArchivioCategorie archivioCategorie,
                                     ArchivioConfiguratori archivioConfiguratori,
                                     ArchivioProposte archivioProposte,
+                                    ArchivioFruitori archivioFruitori,
                                     ArchivioTempoSimulato archivioTempoSimulato,
                                     FornitoreTempo fornitoreTempo) throws IOException {
         if (archivioConfigurazione == null)
@@ -70,6 +79,8 @@ public class ControllerConfiguratore {
             throw new IllegalArgumentException("archivioConfiguratori non può essere null");
         if (archivioProposte == null)
             throw new IllegalArgumentException("archivioProposte non può essere null");
+        if (archivioFruitori == null)
+            throw new IllegalArgumentException("archivioFruitori non può essere null");
         if (archivioTempoSimulato == null)
             throw new IllegalArgumentException("archivioTempoSimulato non può essere null");
         if (fornitoreTempo == null)
@@ -79,6 +90,7 @@ public class ControllerConfiguratore {
         this.archivioCategorie = archivioCategorie;
         this.archivioConfiguratori = archivioConfiguratori;
         this.archivioProposte = archivioProposte;
+        this.archivioFruitori = archivioFruitori;
         this.archivioTempoSimulato = archivioTempoSimulato;
         this.fornitoreTempo = fornitoreTempo;
 
@@ -86,7 +98,23 @@ public class ControllerConfiguratore {
         this.categorie = archivioCategorie.caricaTutte();
         this.configuratori = archivioConfiguratori.caricaTutti();
         this.proposte = archivioProposte.caricaTutte();
+        this.fruitori = archivioFruitori.caricaTutti();
         this.configuratoreLoggato = null;
+
+        // V4: rilega gli osservatori sulle nostre Proposta ora. Motivo: quando questo
+        // controller viene istanziato da Main dopo ControllerFruitore, le Proposta qui
+        // caricate sono ISTANZE DIVERSE da quelle di ControllerFruitore (caricamento
+        // separato da disco), con osservatori transient a null/vuoto. Senza questo
+        // giro, ritiraProposta chiamerebbe applicaTransizione con osservatori vuoti e
+        // le notifiche di ritiro non arriverebbero mai nei SpazioPersonale.
+        for (Proposta p : proposte) {
+            for (String username : p.getAderenti()) {
+                fruitori.stream()
+                        .filter(f -> f.getUsername().equals(username))
+                        .findFirst()
+                        .ifPresent(p::registraOsservatore);
+            }
+        }
     }
 
     // pre:  usernamePredefinito != null && !usernamePredefinito.isBlank()
@@ -346,6 +374,53 @@ public class ControllerConfiguratore {
             }
         }
         return List.copyOf(risultato);
+    }
+
+    // -------------------------------------------------------------------------
+    // V4 — Ritiro proposta (azione esplicita del configuratore)
+    // -------------------------------------------------------------------------
+
+    // post: restituisce le proposte che, in base a stato e data corrente, il configuratore
+    //       può ritirare in questo momento (APERTA o CONFERMATA, e oggi < "Data" evento).
+    //       La view usa questo elenco per mostrare solo scelte legittime.
+    public List<Proposta> getProposteRitirabili() {
+        List<Proposta> risultato = new ArrayList<>();
+        LocalDate oggi = fornitoreTempo.oggi();
+        for (Proposta p : proposte) {
+            if (p.getStato() != StatoProposta.APERTA && p.getStato() != StatoProposta.CONFERMATA)
+                continue;
+            String s = p.getValori().get(Proposta.CAMPO_DATA_EVENTO);
+            if (s == null) continue;
+            try {
+                LocalDate dataEvento = LocalDate.parse(s.trim());
+                if (oggi.isBefore(dataEvento)) risultato.add(p);
+            } catch (java.time.format.DateTimeParseException e) {
+                // campo data evento malformato: salta silenziosamente.
+            }
+        }
+        return List.copyOf(risultato);
+    }
+
+    // pre:  proposta != null && proposta ∈ getProposteRitirabili() (o comunque
+    //       ritirabile secondo Proposta.ritira)
+    // post: (i) proposta.ritira(fornitoreTempo) viene invocato con successo — imposta
+    //           stato = RITIRATA, appende storico, notifica gli osservatori registrati
+    //           (i Fruitore aderenti a questa proposta, rilegati alla costruzione del
+    //           controller);
+    //       (ii) proposte.json viene aggiornato (stato RITIRATA persistito);
+    //       (iii) fruitori.json viene aggiornato (le notifiche appena depositate nei
+    //             SpazioPersonale dei fruitori vengono persistite).
+    //       Se ritira lancia IllegalStateException per vincoli non rispettati (stato,
+    //       data evento superata), l'eccezione viene propagata alla view.
+    public void ritiraProposta(Proposta proposta) throws IOException {
+        if (proposta == null)
+            throw new IllegalArgumentException("proposta non può essere null");
+        if (!proposte.contains(proposta))
+            throw new IllegalArgumentException("proposta non presente tra quelle in memoria");
+
+        proposta.ritira(fornitoreTempo);
+        archivioProposte.salvaTutte(proposte);
+        archivioFruitori.salvaTutti(fruitori);
     }
 
     // -------------------------------------------------------------------------

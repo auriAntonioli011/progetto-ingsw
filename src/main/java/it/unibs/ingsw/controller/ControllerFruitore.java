@@ -154,6 +154,25 @@ public class ControllerFruitore {
         archivioProposte.salvaTutte(proposte);
     }
 
+    // pre:  fruitoreLoggato != null && proposta != null && proposta ∈ proposte
+    // post: proposta.disdici(fruitoreLoggato, fornitoreTempo) è invocato con successo,
+    //       la lista proposte è persistita su ArchivioProposte (aderenti aggiornato).
+    //       Se disdici lancia IllegalStateException (stato non APERTA, termine superato,
+    //       fruitore non iscritto) l'eccezione viene propagata alla view.
+    // inv:  come per aderisci, "solo se stesso" è enforced qui: si disdice esclusivamente
+    //       il fruitoreLoggato.
+    public void disdici(Proposta proposta) throws IOException {
+        if (fruitoreLoggato == null)
+            throw new IllegalStateException("nessun fruitore loggato");
+        if (proposta == null)
+            throw new IllegalArgumentException("proposta non può essere null");
+        if (!proposte.contains(proposta))
+            throw new IllegalArgumentException("proposta non presente tra quelle in memoria");
+
+        proposta.disdici(fruitoreLoggato, fornitoreTempo);
+        archivioProposte.salvaTutte(proposte);
+    }
+
     // post: restituisce lo SpazioPersonale del fruitore loggato
     //       (contiene le Notifica ricevute in questa e nelle sessioni precedenti)
     public SpazioPersonale getSpazioPersonale() {

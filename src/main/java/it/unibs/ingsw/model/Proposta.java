@@ -236,6 +236,89 @@ public class Proposta {
         registraOsservatore(fruitore);
     }
 
+    // pre:  fruitore != null && fornitoreTempo != null
+    // post: se tutti i vincoli sono rispettati — (i) stato == APERTA,
+    //       (ii) oggi <= termine iscrizione,
+    //       (iii) l'username del fruitore è già presente in aderenti — allora
+    //       l'username è rimosso da aderenti e il fruitore rimosso dagli osservatori
+    //       (per evitare notifiche successive a chi ha rinunciato in questa sessione).
+    //       Altrimenti lancia IllegalStateException con motivo esplicito.
+    //       Il fruitore rimane libero di ri-iscriversi in seguito con aderisci(...),
+    //       purché oggi <= termine e la proposta sia ancora APERTA.
+    // inv:  "solo se stesso" (il fruitore deve disdirsi in prima persona) è vincolo
+    //       enforced al livello del controller: qui accettiamo il Fruitore passato
+    //       come "il fruitore che sta chiamando".
+    // nota: interpretazione V4 sul vincolo di stato (Nota 10): il testo del progetto
+    //       parla di "iscrizione a una proposta aperta"; da qui la scelta di consentire
+    //       la disdetta SOLO quando stato == APERTA. In particolare, dopo un ritiro
+    //       (stato RITIRATA) o una conferma (stato CONFERMATA), la disdetta è rifiutata
+    //       — non ha senso rinunciare a un'iscrizione a un evento che non c'è più o
+    //       che ha già raggiunto una forma vincolante.
+    public void disdici(Fruitore fruitore, FornitoreTempo fornitoreTempo) {
+        if (fruitore == null)
+            throw new IllegalArgumentException("fruitore non può essere null");
+        if (fornitoreTempo == null)
+            throw new IllegalArgumentException("fornitoreTempo non può essere null");
+        assicuraStrutture();
+
+        if (stato != StatoProposta.APERTA)
+            throw new IllegalStateException(
+                    "disdetta consentita solo su proposte APERTA (stato attuale: " + stato + ")");
+
+        LocalDate termine = leggiData(CAMPO_TERMINE_ISCRIZIONE);
+        if (termine == null)
+            throw new IllegalStateException(
+                    "campo '" + CAMPO_TERMINE_ISCRIZIONE + "' assente o non parsabile");
+        if (fornitoreTempo.oggi().isAfter(termine))
+            throw new IllegalStateException(
+                    "termine di iscrizione superato (" + termine + ")");
+
+        String username = fruitore.getUsername();
+        if (!aderenti.contains(username))
+            throw new IllegalStateException(
+                    "il fruitore '" + username + "' non risulta iscritto a questa proposta");
+
+        aderenti.remove(username);
+        // Rimuovi dagli osservatori usando equals (Utente.equals è per username,
+        // quindi rimuove l'istanza corretta anche se Fruitore.equals-by-username).
+        osservatori.remove(fruitore);
+    }
+
+    // pre:  fornitoreTempo != null
+    // post: se stato ∈ {APERTA, CONFERMATA} e oggi < "Data" (giorno dell'evento),
+    //       allora stato passa a RITIRATA, lo storico registra (RITIRATA, oggi) e
+    //       tutti gli osservatori attualmente registrati vengono notificati con una
+    //       Notifica avente snapshot dei valori correnti. Altrimenti lancia
+    //       IllegalStateException con motivo esplicito.
+    //       L'elenco aderenti resta invariato dopo il ritiro (congelato, come per
+    //       CONFERMATA/ANNULLATA/CONCLUSA).
+    // inv:  RITIRATA è terminale: elaboraTransizione() non produce transizioni in
+    //       uscita da questo stato.
+    // nota: il ritiro è un'AZIONE ESPLICITA del configuratore, non una transizione
+    //       automatica — perciò non fa parte di elaboraTransizione. Riusa però
+    //       applicaTransizione() (privato) per la parte "cambia stato + storico +
+    //       notifica osservatori" così la logica non viene duplicata.
+    public void ritira(FornitoreTempo fornitoreTempo) {
+        if (fornitoreTempo == null)
+            throw new IllegalArgumentException("fornitoreTempo non può essere null");
+        assicuraStrutture();
+
+        if (stato != StatoProposta.APERTA && stato != StatoProposta.CONFERMATA)
+            throw new IllegalStateException(
+                    "ritiro consentito solo su proposte APERTA o CONFERMATA (stato attuale: " + stato + ")");
+
+        LocalDate dataEvento = leggiData(CAMPO_DATA_EVENTO);
+        if (dataEvento == null)
+            throw new IllegalStateException(
+                    "campo '" + CAMPO_DATA_EVENTO + "' assente o non parsabile");
+        LocalDate oggi = fornitoreTempo.oggi();
+        if (!oggi.isBefore(dataEvento))
+            throw new IllegalStateException(
+                    "ritiro non più consentito: oggi (" + oggi + ") non è precedente alla data evento (" + dataEvento + ")");
+
+        applicaTransizione(StatoProposta.RITIRATA, oggi);
+    }
+
     // pre:  osservatore != null
     // post: osservatore è registrato tra gli osservatori (se non già presente);
     //       usato dopo il caricamento dal ControllerFruitore per rilegare i Fruitore

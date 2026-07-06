@@ -1,0 +1,34 @@
+[
+  {
+    "id": "a351e3b9-e1e5-4325-9b57-a15dc5328dc8",
+    "categoria": {
+      "nome": "Sport",
+      "campiSpecifici": []
+    },
+    "valori": {
+      "Data conclusiva": "2026-07-17",
+      "Titolo": "Torneo di scacchi",
+      "Termine ultimo di iscrizione": "2026-07-09",
+      "Quota individuale": "10.50",
+      "Data": "2026-07-16",
+      "Numero di partecipanti": "1",
+      "Luogo": "Sala civica",
+      "Ora": "18:00"
+    },
+    "stato": "CONFERMATA",
+    "dataPubblicazione": "2026-07-06",
+    "aderenti": [
+      "aurora"
+    ],
+    "storico": [
+      {
+        "stato": "APERTA",
+        "data": "2026-07-06"
+      },
+      {
+        "stato": "CONFERMATA",
+        "data": "2026-07-10"
+      }
+    ]
+  }
+]

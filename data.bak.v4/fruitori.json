@@ -1,0 +1,27 @@
+[
+  {
+    "spazioPersonale": {
+      "notifiche": [
+        {
+          "idProposta": "a351e3b9-e1e5-4325-9b57-a15dc5328dc8",
+          "nomeCategoria": "Sport",
+          "nuovoStato": "CONFERMATA",
+          "data": "2026-07-10",
+          "snapshotValori": {
+            "Data": "2026-07-16",
+            "Termine ultimo di iscrizione": "2026-07-09",
+            "Luogo": "Sala civica",
+            "Ora": "18:00",
+            "Data conclusiva": "2026-07-17",
+            "Numero di partecipanti": "1",
+            "Titolo": "Torneo di scacchi",
+            "Quota individuale": "10.50"
+          }
+        }
+      ]
+    },
+    "username": "aurora",
+    "password": "aurora123",
+    "credenzialiProvvisorie": false
+  }
+]

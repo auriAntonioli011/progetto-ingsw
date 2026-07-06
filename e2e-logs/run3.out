@@ -1,0 +1,50 @@
+
+Chi sei?
+  1) Configuratore
+  2) Fruitore
+Scelta: 
+----------------------------------------------------
+  ACCESSO AL SISTEMA
+----------------------------------------------------
+Username: Password: Benvenuto, mario!
+
+----------------------------------------------------
+  MENU CONFIGURATORE
+----------------------------------------------------
+  2) Fissa/modifica campi comuni
+  3) Crea categoria
+  4) Rimuovi categoria
+  5) Aggiungi campo specifico a categoria
+  6) Rimuovi campo specifico da categoria
+  7) Visualizza categorie e i loro campi
+  8) Crea proposta
+  9) Pubblica proposta valida
+ 10) Visualizza bacheca
+ 11) Visualizza archivio proposte (storico + aderenti)
+ 12) Imposta/modifica data simulata  [attualmente: 2026-07-08]
+ 13) Rimuovi data simulata (torna a tempo reale al riavvio)
+  0) Esci
+Scelta: 
+----------------------------------------------------
+  IMPOSTA DATA SIMULATA
+----------------------------------------------------
+Data attuale: 2026-07-08 (simulata)
+Nuova data simulata (yyyy-MM-dd): Data simulata aggiornata a 2026-07-10 ed è già attiva in questa sessione.
+
+----------------------------------------------------
+  MENU CONFIGURATORE
+----------------------------------------------------
+  2) Fissa/modifica campi comuni
+  3) Crea categoria
+  4) Rimuovi categoria
+  5) Aggiungi campo specifico a categoria
+  6) Rimuovi campo specifico da categoria
+  7) Visualizza categorie e i loro campi
+  8) Crea proposta
+  9) Pubblica proposta valida
+ 10) Visualizza bacheca
+ 11) Visualizza archivio proposte (storico + aderenti)
+ 12) Imposta/modifica data simulata  [attualmente: 2026-07-10]
+ 13) Rimuovi data simulata (torna a tempo reale al riavvio)
+  0) Esci
+Scelta: Arrivederci.

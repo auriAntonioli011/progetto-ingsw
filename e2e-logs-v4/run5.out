@@ -1,0 +1,46 @@
+
+Chi sei?
+  1) Configuratore
+  2) Fruitore
+Scelta: 
+----------------------------------------------------
+  ACCESSO FRUITORE
+----------------------------------------------------
+  1) Registrati
+  2) Accedi
+  0) Torna indietro
+Scelta: 
+----------------------------------------------------
+  LOGIN FRUITORE
+----------------------------------------------------
+Username: Password: Benvenuto, aurora!
+
+----------------------------------------------------
+  MENU FRUITORE — aurora
+----------------------------------------------------
+  1) Visualizza bacheca proposte aperte
+  2) Aderisci a una proposta
+  3) Spazio personale (notifiche + proposte)
+  4) Cancella una notifica
+  5) Disdici iscrizione a una proposta
+  0) Esci
+Scelta: 
+----------------------------------------------------
+  SPAZIO PERSONALE
+----------------------------------------------------
+--- Notifiche ---
+  [2026-07-08] categoria 'Sport' → stato RITIRATA  (proposta id: cfdc485e-8ae4-445e-a3c5-2b2b48f08314)
+
+--- Proposte a cui hai aderito ---
+  - Sport  (stato: RITIRATA, aderenti: 1)
+
+----------------------------------------------------
+  MENU FRUITORE — aurora
+----------------------------------------------------
+  1) Visualizza bacheca proposte aperte
+  2) Aderisci a una proposta
+  3) Spazio personale (notifiche + proposte)
+  4) Cancella una notifica
+  5) Disdici iscrizione a una proposta
+  0) Esci
+Scelta: Arrivederci.

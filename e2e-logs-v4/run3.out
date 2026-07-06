@@ -1,0 +1,61 @@
+
+Chi sei?
+  1) Configuratore
+  2) Fruitore
+Scelta: 
+----------------------------------------------------
+  ACCESSO FRUITORE
+----------------------------------------------------
+  1) Registrati
+  2) Accedi
+  0) Torna indietro
+Scelta: 
+----------------------------------------------------
+  LOGIN FRUITORE
+----------------------------------------------------
+Username: Password: Benvenuto, aurora!
+
+----------------------------------------------------
+  MENU FRUITORE — aurora
+----------------------------------------------------
+  1) Visualizza bacheca proposte aperte
+  2) Aderisci a una proposta
+  3) Spazio personale (notifiche + proposte)
+  4) Cancella una notifica
+  5) Disdici iscrizione a una proposta
+  0) Esci
+Scelta: 
+----------------------------------------------------
+  DISDICI ISCRIZIONE
+----------------------------------------------------
+Iscrizioni disdettabili:
+  1) Sport  (termine: 2026-07-11)
+Numero iscrizione da disdire (0 per annullare): Disdetta registrata. Puoi ri-iscriverti in seguito, sempre entro il termine.
+
+----------------------------------------------------
+  MENU FRUITORE — aurora
+----------------------------------------------------
+  1) Visualizza bacheca proposte aperte
+  2) Aderisci a una proposta
+  3) Spazio personale (notifiche + proposte)
+  4) Cancella una notifica
+  5) Disdici iscrizione a una proposta
+  0) Esci
+Scelta: 
+----------------------------------------------------
+  ADERISCI A UNA PROPOSTA
+----------------------------------------------------
+Proposte disponibili:
+  1) Sport  aderenti: 0/2
+Numero proposta (0 per annullare): Adesione registrata.
+
+----------------------------------------------------
+  MENU FRUITORE — aurora
+----------------------------------------------------
+  1) Visualizza bacheca proposte aperte
+  2) Aderisci a una proposta
+  3) Spazio personale (notifiche + proposte)
+  4) Cancella una notifica
+  5) Disdici iscrizione a una proposta
+  0) Esci
+Scelta: Arrivederci.

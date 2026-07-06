@@ -128,6 +128,7 @@ public class ViewConfiguratore {
             println(" 12) Imposta/modifica data simulata"
                     + (controller.isTempoSimulato() ? "  [attualmente: " + controller.getDataCorrente() + "]" : "  [attualmente: tempo reale]"));
             println(" 13) Rimuovi data simulata (torna a tempo reale al riavvio)");
+            println(" 14) Ritira una proposta (APERTA o CONFERMATA)");
             println("  0) Esci");
 
             switch (leggiIntero("Scelta")) {
@@ -147,6 +148,7 @@ public class ViewConfiguratore {
                 case 11 -> optVisualizzaArchivio();
                 case 12 -> optImpostaDataSimulata();
                 case 13 -> optRimuoviDataSimulata();
+                case 14 -> optRitiraProposta();
                 case 0 -> { println("Arrivederci."); return; }
                 default -> println("[AVVISO] Opzione non riconosciuta.");
             }
@@ -394,6 +396,37 @@ public class ViewConfiguratore {
                 }
             }
             println("");
+        }
+    }
+
+    private void optRitiraProposta() {
+        stampaSezione("RITIRA UNA PROPOSTA");
+        List<Proposta> ritirabili = controller.getProposteRitirabili();
+        if (ritirabili.isEmpty()) {
+            println("Nessuna proposta ritirabile (serve stato APERTA o CONFERMATA e oggi < data evento).");
+            return;
+        }
+        println("Proposte ritirabili:");
+        for (int i = 0; i < ritirabili.size(); i++) {
+            Proposta p = ritirabili.get(i);
+            println("  " + (i + 1) + ") " + p.getCategoria().getNome()
+                    + "  stato=" + p.getStato()
+                    + "  data evento=" + p.getValori().getOrDefault(Proposta.CAMPO_DATA_EVENTO, "?")
+                    + "  aderenti=" + p.getAderenti().size());
+        }
+        int scelta = leggiIntero("Numero proposta da ritirare (0 per annullare)");
+        if (scelta == 0) return;
+        if (scelta < 1 || scelta > ritirabili.size()) {
+            println("[AVVISO] Selezione fuori intervallo.");
+            return;
+        }
+        try {
+            controller.ritiraProposta(ritirabili.get(scelta - 1));
+            println("Proposta ritirata. Notifiche inviate ai fruitori aderenti.");
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            println("[ERRORE] " + e.getMessage());
+        } catch (IOException e) {
+            println("[ERRORE I/O] " + e.getMessage());
         }
     }
 

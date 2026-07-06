@@ -11,6 +11,7 @@ import it.unibs.ingsw.model.TipoCampo;
 import it.unibs.ingsw.persistence.ArchivioCategorie;
 import it.unibs.ingsw.persistence.ArchivioConfigurazione;
 import it.unibs.ingsw.persistence.ArchivioConfiguratori;
+import it.unibs.ingsw.persistence.ArchivioFruitori;
 import it.unibs.ingsw.persistence.ArchivioProposte;
 import it.unibs.ingsw.persistence.ArchivioTempoSimulato;
 import it.unibs.ingsw.util.TempoSimulato;
@@ -43,6 +44,7 @@ class RegressioneV1V2Test {
                 new ArchivioCategorie(dir.resolve("categorie.json")),
                 new ArchivioConfiguratori(dir.resolve("configuratori.json")),
                 new ArchivioProposte(dir.resolve("proposte.json")),
+                new ArchivioFruitori(dir.resolve("fruitori.json")),
                 new ArchivioTempoSimulato(dir.resolve("tempo.json")),
                 new TempoSimulato(OGGI)
         );

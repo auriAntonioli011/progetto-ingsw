@@ -1,0 +1,53 @@
+
+Chi sei?
+  1) Configuratore
+  2) Fruitore
+Scelta: 
+----------------------------------------------------
+  ACCESSO AL SISTEMA
+----------------------------------------------------
+Username: Password: Benvenuto, mario!
+
+----------------------------------------------------
+  MENU CONFIGURATORE
+----------------------------------------------------
+  2) Fissa/modifica campi comuni
+  3) Crea categoria
+  4) Rimuovi categoria
+  5) Aggiungi campo specifico a categoria
+  6) Rimuovi campo specifico da categoria
+  7) Visualizza categorie e i loro campi
+  8) Crea proposta
+  9) Pubblica proposta valida
+ 10) Visualizza bacheca
+ 11) Visualizza archivio proposte (storico + aderenti)
+ 12) Imposta/modifica data simulata  [attualmente: 2026-07-08]
+ 13) Rimuovi data simulata (torna a tempo reale al riavvio)
+ 14) Ritira una proposta (APERTA o CONFERMATA)
+  0) Esci
+Scelta: 
+----------------------------------------------------
+  RITIRA UNA PROPOSTA
+----------------------------------------------------
+Proposte ritirabili:
+  1) Sport  stato=APERTA  data evento=2026-07-15  aderenti=1
+Numero proposta da ritirare (0 per annullare): Proposta ritirata. Notifiche inviate ai fruitori aderenti.
+
+----------------------------------------------------
+  MENU CONFIGURATORE
+----------------------------------------------------
+  2) Fissa/modifica campi comuni
+  3) Crea categoria
+  4) Rimuovi categoria
+  5) Aggiungi campo specifico a categoria
+  6) Rimuovi campo specifico da categoria
+  7) Visualizza categorie e i loro campi
+  8) Crea proposta
+  9) Pubblica proposta valida
+ 10) Visualizza bacheca
+ 11) Visualizza archivio proposte (storico + aderenti)
+ 12) Imposta/modifica data simulata  [attualmente: 2026-07-08]
+ 13) Rimuovi data simulata (torna a tempo reale al riavvio)
+ 14) Ritira una proposta (APERTA o CONFERMATA)
+  0) Esci
+Scelta: Arrivederci.

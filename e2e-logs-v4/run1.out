@@ -1,0 +1,219 @@
+
+Chi sei?
+  1) Configuratore
+  2) Fruitore
+Scelta: 
+----------------------------------------------------
+  PRIMO ACCESSO AL SISTEMA
+----------------------------------------------------
+Inserire le credenziali predefinite ricevute dall'amministratore.
+Username predefinito: Password predefinita: 
+Credenziali predefinite accettate. Scegliere le credenziali personali.
+Nuovo username personale: Nuova password personale: Credenziali confermate. Benvenuto, mario!
+
+----------------------------------------------------
+  MENU CONFIGURATORE
+----------------------------------------------------
+  1) Fissa campi base
+  2) Fissa/modifica campi comuni
+  3) Crea categoria
+  4) Rimuovi categoria
+  5) Aggiungi campo specifico a categoria
+  6) Rimuovi campo specifico da categoria
+  7) Visualizza categorie e i loro campi
+  8) Crea proposta
+  9) Pubblica proposta valida
+ 10) Visualizza bacheca
+ 11) Visualizza archivio proposte (storico + aderenti)
+ 12) Imposta/modifica data simulata  [attualmente: tempo reale]
+ 13) Rimuovi data simulata (torna a tempo reale al riavvio)
+ 14) Ritira una proposta (APERTA o CONFERMATA)
+  0) Esci
+Scelta: 
+----------------------------------------------------
+  FISSA CAMPI BASE
+----------------------------------------------------
+Inserire i campi uno alla volta. Lasciare il nome vuoto per terminare.
+  Nome campo (invio per terminare):   Tipo di campo:
+    1) STRINGA
+    2) INTERO
+    3) DECIMALE
+    4) DATA
+    5) ORA
+    6) BOOLEANO
+  Scelta tipo:   Obbligatorio? (s/n):   Campo 'Titolo' aggiunto.
+  Nome campo (invio per terminare):   Tipo di campo:
+    1) STRINGA
+    2) INTERO
+    3) DECIMALE
+    4) DATA
+    5) ORA
+    6) BOOLEANO
+  Scelta tipo:   Obbligatorio? (s/n):   Campo 'Numero di partecipanti' aggiunto.
+  Nome campo (invio per terminare):   Tipo di campo:
+    1) STRINGA
+    2) INTERO
+    3) DECIMALE
+    4) DATA
+    5) ORA
+    6) BOOLEANO
+  Scelta tipo:   Obbligatorio? (s/n):   Campo 'Termine ultimo di iscrizione' aggiunto.
+  Nome campo (invio per terminare):   Tipo di campo:
+    1) STRINGA
+    2) INTERO
+    3) DECIMALE
+    4) DATA
+    5) ORA
+    6) BOOLEANO
+  Scelta tipo:   Obbligatorio? (s/n):   Campo 'Data' aggiunto.
+  Nome campo (invio per terminare):   Tipo di campo:
+    1) STRINGA
+    2) INTERO
+    3) DECIMALE
+    4) DATA
+    5) ORA
+    6) BOOLEANO
+  Scelta tipo:   Obbligatorio? (s/n):   Campo 'Ora' aggiunto.
+  Nome campo (invio per terminare):   Tipo di campo:
+    1) STRINGA
+    2) INTERO
+    3) DECIMALE
+    4) DATA
+    5) ORA
+    6) BOOLEANO
+  Scelta tipo:   Obbligatorio? (s/n):   Campo 'Luogo' aggiunto.
+  Nome campo (invio per terminare):   Tipo di campo:
+    1) STRINGA
+    2) INTERO
+    3) DECIMALE
+    4) DATA
+    5) ORA
+    6) BOOLEANO
+  Scelta tipo:   Obbligatorio? (s/n):   Campo 'Quota individuale' aggiunto.
+  Nome campo (invio per terminare):   Tipo di campo:
+    1) STRINGA
+    2) INTERO
+    3) DECIMALE
+    4) DATA
+    5) ORA
+    6) BOOLEANO
+  Scelta tipo:   Obbligatorio? (s/n):   Campo 'Data conclusiva' aggiunto.
+  Nome campo (invio per terminare): Campi base fissati (8 campo/i).
+
+----------------------------------------------------
+  MENU CONFIGURATORE
+----------------------------------------------------
+  2) Fissa/modifica campi comuni
+  3) Crea categoria
+  4) Rimuovi categoria
+  5) Aggiungi campo specifico a categoria
+  6) Rimuovi campo specifico da categoria
+  7) Visualizza categorie e i loro campi
+  8) Crea proposta
+  9) Pubblica proposta valida
+ 10) Visualizza bacheca
+ 11) Visualizza archivio proposte (storico + aderenti)
+ 12) Imposta/modifica data simulata  [attualmente: tempo reale]
+ 13) Rimuovi data simulata (torna a tempo reale al riavvio)
+ 14) Ritira una proposta (APERTA o CONFERMATA)
+  0) Esci
+Scelta: 
+----------------------------------------------------
+  CREA CATEGORIA
+----------------------------------------------------
+Nome categoria: Categoria 'Sport' creata.
+
+----------------------------------------------------
+  MENU CONFIGURATORE
+----------------------------------------------------
+  2) Fissa/modifica campi comuni
+  3) Crea categoria
+  4) Rimuovi categoria
+  5) Aggiungi campo specifico a categoria
+  6) Rimuovi campo specifico da categoria
+  7) Visualizza categorie e i loro campi
+  8) Crea proposta
+  9) Pubblica proposta valida
+ 10) Visualizza bacheca
+ 11) Visualizza archivio proposte (storico + aderenti)
+ 12) Imposta/modifica data simulata  [attualmente: tempo reale]
+ 13) Rimuovi data simulata (torna a tempo reale al riavvio)
+ 14) Ritira una proposta (APERTA o CONFERMATA)
+  0) Esci
+Scelta: 
+----------------------------------------------------
+  CREA PROPOSTA
+----------------------------------------------------
+Categorie disponibili:
+  1) Sport
+Numero categoria (0 per annullare): Compila i valori dei campi (Invio per lasciare vuoto un campo facoltativo).
+Per i campi di tipo DATA usare il formato ISO yyyy-MM-dd (es. 2026-07-15).
+  Titolo (STRINGA) [OBBLIGATORIO]:   Numero di partecipanti (INTERO) [OBBLIGATORIO]:   Termine ultimo di iscrizione (DATA) [OBBLIGATORIO]:   Data (DATA) [OBBLIGATORIO]:   Ora (ORA) [OBBLIGATORIO]:   Luogo (STRINGA) [OBBLIGATORIO]:   Quota individuale (DECIMALE) [OBBLIGATORIO]:   Data conclusiva (DATA) [OBBLIGATORIO]: Proposta creata e risulta VALIDA. Puoi pubblicarla dal menu (opzione 9).
+
+----------------------------------------------------
+  MENU CONFIGURATORE
+----------------------------------------------------
+  2) Fissa/modifica campi comuni
+  3) Crea categoria
+  4) Rimuovi categoria
+  5) Aggiungi campo specifico a categoria
+  6) Rimuovi campo specifico da categoria
+  7) Visualizza categorie e i loro campi
+  8) Crea proposta
+  9) Pubblica proposta valida
+ 10) Visualizza bacheca
+ 11) Visualizza archivio proposte (storico + aderenti)
+ 12) Imposta/modifica data simulata  [attualmente: tempo reale]
+ 13) Rimuovi data simulata (torna a tempo reale al riavvio)
+ 14) Ritira una proposta (APERTA o CONFERMATA)
+  0) Esci
+Scelta: 
+----------------------------------------------------
+  PUBBLICA PROPOSTA VALIDA
+----------------------------------------------------
+Proposte VALIDA disponibili:
+  1) categoria=Sport  campi=8
+Numero proposta da pubblicare (0 per annullare): Proposta pubblicata (stato APERTA, dataPubblicazione impostata).
+
+----------------------------------------------------
+  MENU CONFIGURATORE
+----------------------------------------------------
+  2) Fissa/modifica campi comuni
+  3) Crea categoria
+  4) Rimuovi categoria
+  5) Aggiungi campo specifico a categoria
+  6) Rimuovi campo specifico da categoria
+  7) Visualizza categorie e i loro campi
+  8) Crea proposta
+  9) Pubblica proposta valida
+ 10) Visualizza bacheca
+ 11) Visualizza archivio proposte (storico + aderenti)
+ 12) Imposta/modifica data simulata  [attualmente: tempo reale]
+ 13) Rimuovi data simulata (torna a tempo reale al riavvio)
+ 14) Ritira una proposta (APERTA o CONFERMATA)
+  0) Esci
+Scelta: 
+----------------------------------------------------
+  IMPOSTA DATA SIMULATA
+----------------------------------------------------
+Data attuale: 2026-07-06 (tempo reale)
+Nuova data simulata (yyyy-MM-dd): Data simulata salvata (2026-07-08). Verrà applicata al prossimo riavvio dell'applicazione.
+
+----------------------------------------------------
+  MENU CONFIGURATORE
+----------------------------------------------------
+  2) Fissa/modifica campi comuni
+  3) Crea categoria
+  4) Rimuovi categoria
+  5) Aggiungi campo specifico a categoria
+  6) Rimuovi campo specifico da categoria
+  7) Visualizza categorie e i loro campi
+  8) Crea proposta
+  9) Pubblica proposta valida
+ 10) Visualizza bacheca
+ 11) Visualizza archivio proposte (storico + aderenti)
+ 12) Imposta/modifica data simulata  [attualmente: tempo reale]
+ 13) Rimuovi data simulata (torna a tempo reale al riavvio)
+ 14) Ritira una proposta (APERTA o CONFERMATA)
+  0) Esci
+Scelta: Arrivederci.

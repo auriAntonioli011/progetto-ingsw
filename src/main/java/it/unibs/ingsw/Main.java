@@ -64,6 +64,7 @@ public class Main {
                             archivioCategorie,
                             archivioConfiguratori,
                             archivioProposte,
+                            archivioFruitori,
                             archivioTempoSimulato,
                             tempo
                     );

@@ -393,6 +393,7 @@ class ChecklistV3Test {
                 new ArchivioCategorie(pathCat),
                 new ArchivioConfiguratori(pathCnf),
                 new ArchivioProposte(pathProp),
+                new ArchivioFruitori(tempDir.resolve("fruitori.json")),
                 new ArchivioTempoSimulato(pathTmp),
                 new TempoSimulato(POST_TERMINE)
         );

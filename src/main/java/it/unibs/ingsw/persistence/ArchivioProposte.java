@@ -28,13 +28,14 @@ public class ArchivioProposte {
 
     private static final Path PERCORSO_DEFAULT = Path.of("data", "proposte.json");
 
-    // V3: stati persistiti. VALIDA (bozza di sessione) e null (non ancora validata)
+    // V3+V4: stati persistiti. VALIDA (bozza di sessione) e null (non ancora validata)
     // restano intenzionalmente esclusi — vedi javadoc di classe.
     private static final Set<StatoProposta> STATI_PERSISTITI = EnumSet.of(
             StatoProposta.APERTA,
             StatoProposta.CONFERMATA,
             StatoProposta.ANNULLATA,
-            StatoProposta.CONCLUSA
+            StatoProposta.CONCLUSA,
+            StatoProposta.RITIRATA
     );
 
     private final RepositoryJson<Proposta> repository;

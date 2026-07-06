@@ -1,0 +1,46 @@
+{
+  "campiBase": [
+    {
+      "nome": "Titolo",
+      "tipo": "STRINGA",
+      "obbligatorio": true
+    },
+    {
+      "nome": "Numero di partecipanti",
+      "tipo": "INTERO",
+      "obbligatorio": true
+    },
+    {
+      "nome": "Termine ultimo di iscrizione",
+      "tipo": "DATA",
+      "obbligatorio": true
+    },
+    {
+      "nome": "Luogo",
+      "tipo": "STRINGA",
+      "obbligatorio": true
+    },
+    {
+      "nome": "Data",
+      "tipo": "DATA",
+      "obbligatorio": true
+    },
+    {
+      "nome": "Ora",
+      "tipo": "ORA",
+      "obbligatorio": true
+    },
+    {
+      "nome": "Quota individuale",
+      "tipo": "DECIMALE",
+      "obbligatorio": true
+    },
+    {
+      "nome": "Data conclusiva",
+      "tipo": "DATA",
+      "obbligatorio": true
+    }
+  ],
+  "campiComuni": [],
+  "campiBaseFissati": true
+}

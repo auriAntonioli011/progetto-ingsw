@@ -113,6 +113,7 @@ public class ViewFruitore {
             println("  2) Aderisci a una proposta");
             println("  3) Spazio personale (notifiche + proposte)");
             println("  4) Cancella una notifica");
+            println("  5) Disdici iscrizione a una proposta");
             println("  0) Esci");
 
             switch (leggiIntero("Scelta")) {
@@ -120,6 +121,7 @@ public class ViewFruitore {
                 case 2 -> optAderisci();
                 case 3 -> optSpazioPersonale();
                 case 4 -> optCancellaNotifica();
+                case 5 -> optDisdici();
                 case 0 -> { println("Arrivederci."); return; }
                 default -> println("[AVVISO] Opzione non riconosciuta.");
             }
@@ -223,6 +225,39 @@ public class ViewFruitore {
                         + "  (stato: " + p.getStato()
                         + ", aderenti: " + p.getAderenti().size() + ")");
             }
+        }
+    }
+
+    private void optDisdici() {
+        stampaSezione("DISDICI ISCRIZIONE");
+        List<Proposta> aderite = controller.getProposteAderite();
+        // Filtro solo APERTA perché disdici del model rifiuta gli altri stati (Nota 10).
+        List<Proposta> disdettabili = aderite.stream()
+                .filter(p -> p.getStato() == it.unibs.ingsw.model.StatoProposta.APERTA)
+                .toList();
+        if (disdettabili.isEmpty()) {
+            println("Nessuna iscrizione disdettabile (nessuna proposta APERTA a cui aderisci).");
+            return;
+        }
+        println("Iscrizioni disdettabili:");
+        for (int i = 0; i < disdettabili.size(); i++) {
+            Proposta p = disdettabili.get(i);
+            println("  " + (i + 1) + ") " + p.getCategoria().getNome()
+                    + "  (termine: " + p.getValori().getOrDefault(Proposta.CAMPO_TERMINE_ISCRIZIONE, "?") + ")");
+        }
+        int scelta = leggiIntero("Numero iscrizione da disdire (0 per annullare)");
+        if (scelta == 0) return;
+        if (scelta < 1 || scelta > disdettabili.size()) {
+            println("[AVVISO] Selezione fuori intervallo.");
+            return;
+        }
+        try {
+            controller.disdici(disdettabili.get(scelta - 1));
+            println("Disdetta registrata. Puoi ri-iscriverti in seguito, sempre entro il termine.");
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            println("[ERRORE] " + e.getMessage());
+        } catch (IOException e) {
+            println("[ERRORE I/O] " + e.getMessage());
         }
     }
 
