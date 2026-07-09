@@ -1,0 +1,22 @@
+[
+  {
+    "nome": "Escursioni",
+    "campiSpecifici": [
+      {
+        "nome": "Lunghezza percorso (km)",
+        "tipo": "DECIMALE",
+        "obbligatorio": false
+      }
+    ]
+  },
+  {
+    "nome": "Corsi di cucina",
+    "campiSpecifici": [
+      {
+        "nome": "Argomento",
+        "tipo": "STRINGA",
+        "obbligatorio": true
+      }
+    ]
+  }
+]

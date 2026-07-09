@@ -1,0 +1,52 @@
+{
+  "categorie": [
+    {
+      "nome": "Giochi da tavolo",
+      "campiSpecifici": [
+        { "nome": "Gioco proposto", "tipo": "STRINGA", "obbligatorio": false }
+      ]
+    }
+  ],
+  "proposte": [
+    {
+      "categoria": "Giochi da tavolo",
+      "valori": {
+        "Titolo": "Serata giochi in oratorio",
+        "Numero di partecipanti": "4",
+        "Termine ultimo di iscrizione": "2026-09-30",
+        "Data": "2026-10-05",
+        "Ora": "20:30",
+        "Luogo": "Oratorio di via Milano",
+        "Quota individuale": "0.00",
+        "Data conclusiva": "2026-10-05",
+        "Gioco proposto": "Catan"
+      }
+    },
+    {
+      "categoria": "Escursioni",
+      "valori": {
+        "Titolo": "Anello dei tre laghetti",
+        "Numero di partecipanti": "3",
+        "Termine ultimo di iscrizione": "2026-09-28",
+        "Data": "2026-10-03",
+        "Ora": "08:00",
+        "Luogo": "Parcheggio di Bagolino",
+        "Quota individuale": "4.00",
+        "Data conclusiva": "2026-10-03",
+        "Lunghezza percorso (km)": "11.0"
+      }
+    },
+    {
+      "categoria": "Escursioni",
+      "valori": {
+        "Titolo": "Proposta volutamente incompleta (manca il Luogo)",
+        "Numero di partecipanti": "3",
+        "Termine ultimo di iscrizione": "2026-09-28",
+        "Data": "2026-10-03",
+        "Ora": "08:00",
+        "Quota individuale": "4.00",
+        "Data conclusiva": "2026-10-03"
+      }
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 package it.unibs.ingsw.view;
 
 import it.unibs.ingsw.controller.ControllerConfiguratore;
+import it.unibs.ingsw.controller.ImportatoreBatch;
 import it.unibs.ingsw.model.Bacheca;
 import it.unibs.ingsw.model.Campo;
 import it.unibs.ingsw.model.Categoria;
@@ -11,6 +12,8 @@ import it.unibs.ingsw.model.StatoProposta;
 import it.unibs.ingsw.model.TipoCampo;
 
 import java.io.IOException;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -129,6 +132,7 @@ public class ViewConfiguratore {
                     + (controller.isTempoSimulato() ? "  [attualmente: " + controller.getDataCorrente() + "]" : "  [attualmente: tempo reale]"));
             println(" 13) Rimuovi data simulata (torna a tempo reale al riavvio)");
             println(" 14) Ritira una proposta (APERTA o CONFERMATA)");
+            println(" 15) Importa da file (categorie e proposte, batch)");
             println("  0) Esci");
 
             switch (leggiIntero("Scelta")) {
@@ -149,6 +153,7 @@ public class ViewConfiguratore {
                 case 12 -> optImpostaDataSimulata();
                 case 13 -> optRimuoviDataSimulata();
                 case 14 -> optRitiraProposta();
+                case 15 -> optImportaDaFile();
                 case 0 -> { println("Arrivederci."); return; }
                 default -> println("[AVVISO] Opzione non riconosciuta.");
             }
@@ -427,6 +432,34 @@ public class ViewConfiguratore {
             println("[ERRORE] " + e.getMessage());
         } catch (IOException e) {
             println("[ERRORE I/O] " + e.getMessage());
+        }
+    }
+
+    private void optImportaDaFile() {
+        stampaSezione("IMPORTA DA FILE (BATCH)");
+        println("Il file deve essere un JSON con i blocchi opzionali \"categorie\" e \"proposte\".");
+        println("Le proposte valide vengono pubblicate automaticamente in bacheca (stato APERTA).");
+        String percorso = leggiStringa("Percorso del file da importare");
+        ImportatoreBatch.EsitoImport esito;
+        try {
+            esito = new ImportatoreBatch(controller).importa(Path.of(percorso));
+        } catch (InvalidPathException e) {
+            println("[ERRORE] Percorso non valido: " + e.getMessage());
+            return;
+        }
+        println("");
+        println("Riepilogo import:");
+        println("  Categorie importate: " + esito.categorieImportate()
+                + "  (scartate: " + esito.categorieScartate() + ")");
+        println("  Proposte importate e pubblicate: " + esito.proposteImportate()
+                + "  (scartate: " + esito.proposteScartate() + ")");
+        if (esito.avvisi().isEmpty()) {
+            println("  Nessun avviso.");
+        } else {
+            println("  Avvisi:");
+            for (String a : esito.avvisi()) {
+                println("    - " + a);
+            }
         }
     }
 

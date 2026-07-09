@@ -465,6 +465,22 @@ public class ControllerConfiguratore {
         archivioTempoSimulato.rimuoviDataSimulata();
     }
 
+    // -------------------------------------------------------------------------
+    // V5 — Supporto all'import batch
+    // -------------------------------------------------------------------------
+
+    // pre:  proposta != null
+    // post: restituisce l'elenco leggibile dei vincoli di validità che la proposta
+    //       viola in questo momento (vuoto se la proposta è valida). Usato
+    //       dall'ImportatoreBatch per motivare lo scarto di una proposta importata;
+    //       delega a Proposta.vincoliViolati con il fornitoreTempo e la
+    //       configurazione di questa sessione.
+    public List<String> descriviVincoliViolati(Proposta proposta) {
+        if (proposta == null)
+            throw new IllegalArgumentException("proposta non può essere null");
+        return proposta.vincoliViolati(fornitoreTempo, configurazioneGlobale);
+    }
+
     // --- helper privati ---
 
     private Optional<Configuratore> trovaPerUsername(String username) {

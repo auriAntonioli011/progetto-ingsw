@@ -144,17 +144,34 @@ public class Proposta {
     //       ConfigurazioneGlobale viene ricevuta come parametro (non conservata) per rispettare
     //       la stessa convenzione già adottata da Categoria.getTuttiICampi.
     public boolean valida(FornitoreTempo fornitoreTempo, ConfigurazioneGlobale configurazioneGlobale) {
+        if (!vincoliViolati(fornitoreTempo, configurazioneGlobale).isEmpty())
+            return false;
+        this.stato = StatoProposta.VALIDA;
+        return true;
+    }
+
+    // pre:  fornitoreTempo != null && configurazioneGlobale != null
+    // post: restituisce l'elenco (immutabile, eventualmente vuoto) delle descrizioni
+    //       leggibili dei vincoli di validità violati dalla proposta. Lista vuota
+    //       se e solo se valida() avrebbe esito positivo. Non modifica lo stato.
+    // inv:  è l'unico punto in cui i vincoli (a)-(d) sono codificati: valida() vi
+    //       delega, così la diagnostica (V5, import batch) e la validazione
+    //       applicano per costruzione le stesse regole.
+    public List<String> vincoliViolati(FornitoreTempo fornitoreTempo, ConfigurazioneGlobale configurazioneGlobale) {
         if (fornitoreTempo == null)
             throw new IllegalArgumentException("fornitoreTempo non può essere null");
         if (configurazioneGlobale == null)
             throw new IllegalArgumentException("configurazioneGlobale non può essere null");
+
+        List<String> violazioni = new ArrayList<>();
 
         // (d) campi obbligatori
         List<Campo> tutti = categoria.getTuttiICampi(configurazioneGlobale);
         for (Campo c : tutti) {
             if (c.isObbligatorio()) {
                 String v = valori.get(c.getNome());
-                if (v == null || v.isBlank()) return false;
+                if (v == null || v.isBlank())
+                    violazioni.add("campo obbligatorio '" + c.getNome() + "' mancante o vuoto");
             }
         }
 
@@ -162,16 +179,26 @@ public class Proposta {
         LocalDate termineIscrizione = leggiData(CAMPO_TERMINE_ISCRIZIONE);
         LocalDate dataEvento = leggiData(CAMPO_DATA_EVENTO);
         LocalDate dataConclusiva = leggiData(CAMPO_DATA_CONCLUSIVA);
-        if (termineIscrizione == null || dataEvento == null || dataConclusiva == null)
-            return false;
+        if (termineIscrizione == null)
+            violazioni.add("campo '" + CAMPO_TERMINE_ISCRIZIONE + "' assente o non interpretabile come data");
+        if (dataEvento == null)
+            violazioni.add("campo '" + CAMPO_DATA_EVENTO + "' assente o non interpretabile come data");
+        if (dataConclusiva == null)
+            violazioni.add("campo '" + CAMPO_DATA_CONCLUSIVA + "' assente o non interpretabile come data");
 
         LocalDate oggi = fornitoreTempo.oggi();
-        if (!termineIscrizione.isAfter(oggi)) return false;                       // (a)
-        if (dataEvento.isBefore(termineIscrizione.plusDays(2))) return false;      // (b)
-        if (dataConclusiva.isBefore(dataEvento)) return false;                     // (c)
+        if (termineIscrizione != null && !termineIscrizione.isAfter(oggi))                         // (a)
+            violazioni.add("il termine ultimo di iscrizione (" + termineIscrizione
+                    + ") non è successivo alla data odierna (" + oggi + ")");
+        if (termineIscrizione != null && dataEvento != null
+                && dataEvento.isBefore(termineIscrizione.plusDays(2)))                              // (b)
+            violazioni.add("la data dell'evento (" + dataEvento
+                    + ") precede di meno di 2 giorni il termine di iscrizione (" + termineIscrizione + ")");
+        if (dataEvento != null && dataConclusiva != null && dataConclusiva.isBefore(dataEvento))    // (c)
+            violazioni.add("la data conclusiva (" + dataConclusiva
+                    + ") precede la data dell'evento (" + dataEvento + ")");
 
-        this.stato = StatoProposta.VALIDA;
-        return true;
+        return List.copyOf(violazioni);
     }
 
     // pre:  stato == StatoProposta.VALIDA && dataPubblicazione != null

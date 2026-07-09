@@ -1,0 +1,307 @@
+[
+  {
+    "id": "1f1a8c97-0a68-4856-873e-a7bdb96e2491",
+    "categoria": {
+      "nome": "Escursioni",
+      "campiSpecifici": [
+        {
+          "nome": "Lunghezza percorso (km)",
+          "tipo": "DECIMALE",
+          "obbligatorio": false
+        }
+      ]
+    },
+    "valori": {
+      "Lunghezza percorso (km)": "12.5",
+      "Data conclusiva": "2026-09-26",
+      "Titolo": "Escursione al Monte Guglielmo",
+      "Termine ultimo di iscrizione": "2026-09-20",
+      "Quota individuale": "5.00",
+      "Data": "2026-09-25",
+      "Numero di partecipanti": "3",
+      "Luogo": "Ritrovo piazzale funivia",
+      "Ora": "08:30"
+    },
+    "stato": "APERTA",
+    "dataPubblicazione": "2026-07-20",
+    "aderenti": [
+      "fruitore1"
+    ],
+    "storico": [
+      {
+        "stato": "APERTA",
+        "data": "2026-07-20"
+      }
+    ]
+  },
+  {
+    "id": "630bec7e-f864-47e8-b96e-3fa8900f7688",
+    "categoria": {
+      "nome": "Escursioni",
+      "campiSpecifici": [
+        {
+          "nome": "Lunghezza percorso (km)",
+          "tipo": "DECIMALE",
+          "obbligatorio": false
+        }
+      ]
+    },
+    "valori": {
+      "Lunghezza percorso (km)": "8.0",
+      "Data conclusiva": "2026-09-25",
+      "Titolo": "Camminata al lago di Iseo",
+      "Termine ultimo di iscrizione": "2026-09-20",
+      "Quota individuale": "0.00",
+      "Data": "2026-09-25",
+      "Numero di partecipanti": "2",
+      "Luogo": "Lungolago di Sarnico",
+      "Ora": "09:00"
+    },
+    "stato": "APERTA",
+    "dataPubblicazione": "2026-07-20",
+    "aderenti": [],
+    "storico": [
+      {
+        "stato": "APERTA",
+        "data": "2026-07-20"
+      }
+    ]
+  },
+  {
+    "id": "744f54c0-2152-468b-8be7-285b7bf754d5",
+    "categoria": {
+      "nome": "Corsi di cucina",
+      "campiSpecifici": [
+        {
+          "nome": "Argomento",
+          "tipo": "STRINGA",
+          "obbligatorio": true
+        }
+      ]
+    },
+    "valori": {
+      "Data conclusiva": "2026-09-25",
+      "Titolo": "Corso di pasta fresca",
+      "Termine ultimo di iscrizione": "2026-09-20",
+      "Quota individuale": "15.00",
+      "Argomento": "Pasta ripiena",
+      "Data": "2026-09-25",
+      "Numero di partecipanti": "3",
+      "Luogo": "Cucina della sala civica",
+      "Ora": "18:00"
+    },
+    "stato": "APERTA",
+    "dataPubblicazione": "2026-07-20",
+    "aderenti": [
+      "fruitore2"
+    ],
+    "storico": [
+      {
+        "stato": "APERTA",
+        "data": "2026-07-20"
+      }
+    ]
+  },
+  {
+    "id": "f63894dc-7dcf-4d8f-826e-1f04f851566f",
+    "categoria": {
+      "nome": "Escursioni",
+      "campiSpecifici": [
+        {
+          "nome": "Lunghezza percorso (km)",
+          "tipo": "DECIMALE",
+          "obbligatorio": false
+        }
+      ]
+    },
+    "valori": {
+      "Lunghezza percorso (km)": "6.0",
+      "Data conclusiva": "2026-09-11",
+      "Titolo": "Escursione alle Torbiere",
+      "Termine ultimo di iscrizione": "2026-08-20",
+      "Quota individuale": "3.00",
+      "Data": "2026-09-10",
+      "Numero di partecipanti": "2",
+      "Luogo": "Ingresso riserva Torbiere del Sebino",
+      "Ora": "09:30"
+    },
+    "stato": "CONFERMATA",
+    "dataPubblicazione": "2026-07-20",
+    "aderenti": [
+      "fruitore1",
+      "fruitore2"
+    ],
+    "storico": [
+      {
+        "stato": "APERTA",
+        "data": "2026-07-20"
+      },
+      {
+        "stato": "CONFERMATA",
+        "data": "2026-08-21"
+      }
+    ]
+  },
+  {
+    "id": "7d07ac55-3b06-4e11-aba1-777e609d03a0",
+    "categoria": {
+      "nome": "Corsi di cucina",
+      "campiSpecifici": [
+        {
+          "nome": "Argomento",
+          "tipo": "STRINGA",
+          "obbligatorio": true
+        }
+      ]
+    },
+    "valori": {
+      "Data conclusiva": "2026-09-10",
+      "Titolo": "Corso di panificazione",
+      "Termine ultimo di iscrizione": "2026-08-20",
+      "Quota individuale": "12.00",
+      "Argomento": "Pane con lievito madre",
+      "Data": "2026-09-10",
+      "Numero di partecipanti": "2",
+      "Luogo": "Laboratorio del forno sociale",
+      "Ora": "17:30"
+    },
+    "stato": "CONFERMATA",
+    "dataPubblicazione": "2026-07-20",
+    "aderenti": [
+      "fruitore1",
+      "fruitore3"
+    ],
+    "storico": [
+      {
+        "stato": "APERTA",
+        "data": "2026-07-20"
+      },
+      {
+        "stato": "CONFERMATA",
+        "data": "2026-08-21"
+      }
+    ]
+  },
+  {
+    "id": "660ec416-7fc7-4415-90ac-6dc33e5aeccd",
+    "categoria": {
+      "nome": "Escursioni",
+      "campiSpecifici": [
+        {
+          "nome": "Lunghezza percorso (km)",
+          "tipo": "DECIMALE",
+          "obbligatorio": false
+        }
+      ]
+    },
+    "valori": {
+      "Lunghezza percorso (km)": "9.0",
+      "Data conclusiva": "2026-08-11",
+      "Titolo": "Salita al Monte Isola",
+      "Termine ultimo di iscrizione": "2026-08-05",
+      "Quota individuale": "7.50",
+      "Data": "2026-08-10",
+      "Numero di partecipanti": "2",
+      "Luogo": "Imbarcadero di Sulzano",
+      "Ora": "08:00"
+    },
+    "stato": "CONCLUSA",
+    "dataPubblicazione": "2026-07-20",
+    "aderenti": [
+      "fruitore2",
+      "fruitore3"
+    ],
+    "storico": [
+      {
+        "stato": "APERTA",
+        "data": "2026-07-20"
+      },
+      {
+        "stato": "CONFERMATA",
+        "data": "2026-08-06"
+      },
+      {
+        "stato": "CONCLUSA",
+        "data": "2026-08-12"
+      }
+    ]
+  },
+  {
+    "id": "cc43f078-2b0d-4922-9873-e4f5547e56f6",
+    "categoria": {
+      "nome": "Corsi di cucina",
+      "campiSpecifici": [
+        {
+          "nome": "Argomento",
+          "tipo": "STRINGA",
+          "obbligatorio": true
+        }
+      ]
+    },
+    "valori": {
+      "Data conclusiva": "2026-08-10",
+      "Titolo": "Corso di cucina vegetariana",
+      "Termine ultimo di iscrizione": "2026-08-05",
+      "Quota individuale": "10.00",
+      "Argomento": "Menù di stagione",
+      "Data": "2026-08-10",
+      "Numero di partecipanti": "3",
+      "Luogo": "Cucina della sala civica",
+      "Ora": "18:30"
+    },
+    "stato": "ANNULLATA",
+    "dataPubblicazione": "2026-07-20",
+    "aderenti": [
+      "fruitore1"
+    ],
+    "storico": [
+      {
+        "stato": "APERTA",
+        "data": "2026-07-20"
+      },
+      {
+        "stato": "ANNULLATA",
+        "data": "2026-08-06"
+      }
+    ]
+  },
+  {
+    "id": "dffd2924-8155-4423-b639-5e380014d510",
+    "categoria": {
+      "nome": "Escursioni",
+      "campiSpecifici": [
+        {
+          "nome": "Lunghezza percorso (km)",
+          "tipo": "DECIMALE",
+          "obbligatorio": false
+        }
+      ]
+    },
+    "valori": {
+      "Lunghezza percorso (km)": "16.0",
+      "Data conclusiva": "2026-09-26",
+      "Titolo": "Traversata in quota",
+      "Termine ultimo di iscrizione": "2026-09-20",
+      "Quota individuale": "20.00",
+      "Data": "2026-09-25",
+      "Numero di partecipanti": "3",
+      "Luogo": "Rifugio Almici",
+      "Ora": "07:00"
+    },
+    "stato": "RITIRATA",
+    "dataPubblicazione": "2026-07-20",
+    "aderenti": [
+      "fruitore3"
+    ],
+    "storico": [
+      {
+        "stato": "APERTA",
+        "data": "2026-07-20"
+      },
+      {
+        "stato": "RITIRATA",
+        "data": "2026-08-25"
+      }
+    ]
+  }
+]

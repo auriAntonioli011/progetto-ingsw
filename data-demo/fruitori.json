@@ -1,0 +1,199 @@
+[
+  {
+    "spazioPersonale": {
+      "notifiche": [
+        {
+          "idProposta": "cc43f078-2b0d-4922-9873-e4f5547e56f6",
+          "nomeCategoria": "Corsi di cucina",
+          "nuovoStato": "ANNULLATA",
+          "data": "2026-08-06",
+          "snapshotValori": {
+            "Numero di partecipanti": "3",
+            "Quota individuale": "10.00",
+            "Titolo": "Corso di cucina vegetariana",
+            "Argomento": "Menù di stagione",
+            "Luogo": "Cucina della sala civica",
+            "Termine ultimo di iscrizione": "2026-08-05",
+            "Ora": "18:30",
+            "Data conclusiva": "2026-08-10",
+            "Data": "2026-08-10"
+          }
+        },
+        {
+          "idProposta": "f63894dc-7dcf-4d8f-826e-1f04f851566f",
+          "nomeCategoria": "Escursioni",
+          "nuovoStato": "CONFERMATA",
+          "data": "2026-08-21",
+          "snapshotValori": {
+            "Numero di partecipanti": "2",
+            "Lunghezza percorso (km)": "6.0",
+            "Titolo": "Escursione alle Torbiere",
+            "Quota individuale": "3.00",
+            "Luogo": "Ingresso riserva Torbiere del Sebino",
+            "Termine ultimo di iscrizione": "2026-08-20",
+            "Ora": "09:30",
+            "Data conclusiva": "2026-09-11",
+            "Data": "2026-09-10"
+          }
+        },
+        {
+          "idProposta": "7d07ac55-3b06-4e11-aba1-777e609d03a0",
+          "nomeCategoria": "Corsi di cucina",
+          "nuovoStato": "CONFERMATA",
+          "data": "2026-08-21",
+          "snapshotValori": {
+            "Numero di partecipanti": "2",
+            "Quota individuale": "12.00",
+            "Titolo": "Corso di panificazione",
+            "Argomento": "Pane con lievito madre",
+            "Luogo": "Laboratorio del forno sociale",
+            "Termine ultimo di iscrizione": "2026-08-20",
+            "Ora": "17:30",
+            "Data conclusiva": "2026-09-10",
+            "Data": "2026-09-10"
+          }
+        }
+      ]
+    },
+    "username": "fruitore1",
+    "password": "fruitore1",
+    "credenzialiProvvisorie": false
+  },
+  {
+    "spazioPersonale": {
+      "notifiche": [
+        {
+          "idProposta": "660ec416-7fc7-4415-90ac-6dc33e5aeccd",
+          "nomeCategoria": "Escursioni",
+          "nuovoStato": "CONFERMATA",
+          "data": "2026-08-06",
+          "snapshotValori": {
+            "Numero di partecipanti": "2",
+            "Lunghezza percorso (km)": "9.0",
+            "Titolo": "Salita al Monte Isola",
+            "Quota individuale": "7.50",
+            "Luogo": "Imbarcadero di Sulzano",
+            "Termine ultimo di iscrizione": "2026-08-05",
+            "Ora": "08:00",
+            "Data conclusiva": "2026-08-11",
+            "Data": "2026-08-10"
+          }
+        },
+        {
+          "idProposta": "660ec416-7fc7-4415-90ac-6dc33e5aeccd",
+          "nomeCategoria": "Escursioni",
+          "nuovoStato": "CONCLUSA",
+          "data": "2026-08-12",
+          "snapshotValori": {
+            "Numero di partecipanti": "2",
+            "Lunghezza percorso (km)": "9.0",
+            "Titolo": "Salita al Monte Isola",
+            "Quota individuale": "7.50",
+            "Luogo": "Imbarcadero di Sulzano",
+            "Termine ultimo di iscrizione": "2026-08-05",
+            "Ora": "08:00",
+            "Data conclusiva": "2026-08-11",
+            "Data": "2026-08-10"
+          }
+        },
+        {
+          "idProposta": "f63894dc-7dcf-4d8f-826e-1f04f851566f",
+          "nomeCategoria": "Escursioni",
+          "nuovoStato": "CONFERMATA",
+          "data": "2026-08-21",
+          "snapshotValori": {
+            "Numero di partecipanti": "2",
+            "Lunghezza percorso (km)": "6.0",
+            "Titolo": "Escursione alle Torbiere",
+            "Quota individuale": "3.00",
+            "Luogo": "Ingresso riserva Torbiere del Sebino",
+            "Termine ultimo di iscrizione": "2026-08-20",
+            "Ora": "09:30",
+            "Data conclusiva": "2026-09-11",
+            "Data": "2026-09-10"
+          }
+        }
+      ]
+    },
+    "username": "fruitore2",
+    "password": "fruitore2",
+    "credenzialiProvvisorie": false
+  },
+  {
+    "spazioPersonale": {
+      "notifiche": [
+        {
+          "idProposta": "660ec416-7fc7-4415-90ac-6dc33e5aeccd",
+          "nomeCategoria": "Escursioni",
+          "nuovoStato": "CONFERMATA",
+          "data": "2026-08-06",
+          "snapshotValori": {
+            "Numero di partecipanti": "2",
+            "Lunghezza percorso (km)": "9.0",
+            "Titolo": "Salita al Monte Isola",
+            "Quota individuale": "7.50",
+            "Luogo": "Imbarcadero di Sulzano",
+            "Termine ultimo di iscrizione": "2026-08-05",
+            "Ora": "08:00",
+            "Data conclusiva": "2026-08-11",
+            "Data": "2026-08-10"
+          }
+        },
+        {
+          "idProposta": "660ec416-7fc7-4415-90ac-6dc33e5aeccd",
+          "nomeCategoria": "Escursioni",
+          "nuovoStato": "CONCLUSA",
+          "data": "2026-08-12",
+          "snapshotValori": {
+            "Numero di partecipanti": "2",
+            "Lunghezza percorso (km)": "9.0",
+            "Titolo": "Salita al Monte Isola",
+            "Quota individuale": "7.50",
+            "Luogo": "Imbarcadero di Sulzano",
+            "Termine ultimo di iscrizione": "2026-08-05",
+            "Ora": "08:00",
+            "Data conclusiva": "2026-08-11",
+            "Data": "2026-08-10"
+          }
+        },
+        {
+          "idProposta": "7d07ac55-3b06-4e11-aba1-777e609d03a0",
+          "nomeCategoria": "Corsi di cucina",
+          "nuovoStato": "CONFERMATA",
+          "data": "2026-08-21",
+          "snapshotValori": {
+            "Numero di partecipanti": "2",
+            "Quota individuale": "12.00",
+            "Titolo": "Corso di panificazione",
+            "Argomento": "Pane con lievito madre",
+            "Luogo": "Laboratorio del forno sociale",
+            "Termine ultimo di iscrizione": "2026-08-20",
+            "Ora": "17:30",
+            "Data conclusiva": "2026-09-10",
+            "Data": "2026-09-10"
+          }
+        },
+        {
+          "idProposta": "dffd2924-8155-4423-b639-5e380014d510",
+          "nomeCategoria": "Escursioni",
+          "nuovoStato": "RITIRATA",
+          "data": "2026-08-25",
+          "snapshotValori": {
+            "Numero di partecipanti": "3",
+            "Lunghezza percorso (km)": "16.0",
+            "Titolo": "Traversata in quota",
+            "Quota individuale": "20.00",
+            "Luogo": "Rifugio Almici",
+            "Termine ultimo di iscrizione": "2026-09-20",
+            "Ora": "07:00",
+            "Data conclusiva": "2026-09-26",
+            "Data": "2026-09-25"
+          }
+        }
+      ]
+    },
+    "username": "fruitore3",
+    "password": "fruitore3",
+    "credenzialiProvvisorie": false
+  }
+]

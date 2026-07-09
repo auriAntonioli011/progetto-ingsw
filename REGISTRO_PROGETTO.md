@@ -259,3 +259,47 @@ Dettaglio esiti V4 (tutti PASS):
 - **`ControllerConfiguratore` ora dipende da `ArchivioFruitori` e ricollega gli osservatori nel costruttore.** In V3 solo `ControllerFruitore` faceva il ricollegamento — sufficiente perché lì avvenivano tutte le transizioni automatiche. In V4 il ritiro è azione del CONFIGURATORE: `ritiraProposta` deve depositare notifiche nei `SpazioPersonale` E persistere `fruitori.json`. Senza ricollegamento osservatori nel costruttore di `ControllerConfiguratore` le Proposta lì caricate avrebbero `osservatori` (transient) vuoto e le notifiche di ritiro si perderebbero silenziosamente. Fix motivato dal test di integrazione `ritira_via_controller_configuratore_persiste_notifiche`. Effetto collaterale: la firma del costruttore è cambiata (nuovo parametro `archivioFruitori`), `Main` è stato aggiornato di conseguenza. Nessun test V3 impattato.
 
 - **`getProposteRitirabili()` filtra a livello di controller.** La view mostra all'utente solo scelte legittime (stato ∈ {APERTA, CONFERMATA} e `oggi < dataEvento`). `Proposta.ritira` fa comunque il double-check e lancia `IllegalStateException` — difesa a due livelli. Se il campo "Data" è assente o malformato la proposta viene omessa silenziosamente (fail-safe, coerente con la scelta V3 su `elaboraTransizione`).
+
+### V5 — import batch, completata
+
+**Classi aggiunte:**
+
+| Package | Classi |
+|---|---|
+| `controller` | `ImportatoreBatch` (con record annidato `EsitoImport`) |
+
+**Classi estese (solo aggiunte, nessuna modifica a comportamento V1–V4):**
+- `Proposta`: nuovo metodo pubblico `vincoliViolati(FornitoreTempo, ConfigurazioneGlobale)` che restituisce l'elenco leggibile dei vincoli di validità violati; `valida()` ora vi delega (stesse regole per costruzione, esito invariato — verificato dalla regressione)
+- `ControllerConfiguratore`: nuovo `descriviVincoliViolati(Proposta)` (diagnostica per l'import, delega a `Proposta.vincoliViolati` con il fornitoreTempo e la configurazione di sessione)
+- `ViewConfiguratore`: voce menu 15 ("Importa da file") con stampa del riepilogo `EsitoImport`; la modalità interattiva resta identica
+
+**Formato del file di import** (JSON, blocchi entrambi opzionali; stessi nomi campo, carattere per carattere, dello schema Gson già usato da `categorie.json` e dai valori di `proposte.json`):
+
+```json
+{
+  "categorie": [ { "nome": "...", "campiSpecifici": [ { "nome": "...", "tipo": "...", "obbligatorio": true } ] } ],
+  "proposte":  [ { "categoria": "...", "valori": { "Titolo": "...", "Termine ultimo di iscrizione": "...", ... } } ]
+}
+```
+
+**Testato con suite JUnit 5 (sessione del 2026-07-09, 45 test verdi totali):**
+- `ChecklistV5Test` (12 test): import pulito; proposta che referenzia una categoria dello stesso file; categoria duplicata skippata (nessun merge su quella esistente); campo specifico duplicato skippato con categoria comunque creata; tipo campo non riconosciuto skippato; proposta con categoria inesistente scartata; proposta con vincolo date violato scartata (avviso indica il vincolo); proposta con obbligatorio mancante scartata (avviso nomina il campo); file malformato gestito senza scritture; file inesistente gestito; elemento malformato isolato senza abortire l'import; persistenza roundtrip dopo "riavvio"
+- `ChecklistV4Test` (13) + `ChecklistV3Test` (14) + `RegressioneV1V2Test` (6) restano verdi — regressione confermata, modalità interattiva invariata
+
+### Registro delle scelte implementative — aggiunte V5
+
+- **Le proposte importate valide vengono pubblicate automaticamente (stato APERTA).** Nel flusso interattivo V2 una proposta VALIDA resta bozza di sessione finché l'utente non chiede la pubblicazione (voce 9): ha senso perché esiste una sessione in cui l'utente può ancora decidere. In batch quel concetto non esiste — il file È la decisione del configuratore, e una VALIDA non pubblicata andrebbe persa alla chiusura del programma (le bozze non si persistono, invariante V2). Quindi: proposta valida → `richiediPubblicazione` immediata → APERTA in bacheca, persistita. Le proposte non valide vengono scartate con l'elenco dei vincoli falliti.
+- **Ordine di elaborazione: prima tutte le categorie del file, poi tutte le proposte.** Così una proposta può referenziare una categoria importata nello stesso file (test `proposta_referenzia_categoria_stesso_file`).
+- **Politica continua-e-riporta.** Ogni elemento (categoria, campo, proposta) è isolato in un proprio blocco try: un elemento malformato o non valido produce un avviso nel riepilogo e non aborta gli altri. Fa eccezione il file nel suo complesso: se è inesistente o sintatticamente malformato l'import termina con errore gestito e NESSUNA scrittura (il parsing ad albero avviene per intero prima di toccare qualunque archivio).
+- **Politiche sui duplicati:** categoria con nome già esistente → intero elemento skippato con messaggio, nessun merge dei campi su quella presente; campo specifico duplicato (o in conflitto con base/comuni) → solo il campo è skippato, la categoria viene comunque creata; tipo campo non riconosciuto → campo skippato con messaggio che riporta il valore non valido.
+- **Zero duplicazione di logica: l'importatore passa solo dai metodi del controller.** `creaCategoria`, `aggiungiCampoSpecifico`, `creaProposta` (che invoca `valida()` di V2) e `richiediPubblicazione`: vincoli, persistenza e messaggi d'errore sono per costruzione gli stessi della modalità interattiva. `ImportatoreBatch` non tocca mai archivi o regole di dominio direttamente; l'unico parsing che fa è la lettura difensiva dell'albero JSON (Gson `JsonParser`), necessaria per isolare gli elementi malformati — cosa impossibile deserializzando l'intero file in un colpo solo.
+- **`Proposta.vincoliViolati` come unico punto dei vincoli (a)–(d).** Per motivare gli scarti ("quale vincolo ha fallito") serviva una diagnostica che `valida():boolean` non offre. Invece di duplicare i controlli nell'importatore, i vincoli sono stati estratti in `vincoliViolati(...)` (lista di violazioni leggibili, vuota ⇔ valida) e `valida()` è stato riscritto come delega: comportamento identico, un'unica codifica delle regole.
+- **Import batch collocato nel package `controller`.** L'importatore coordina model e persistence attraverso il controller: è responsabilità da controller, non da persistence (che resta il solo strato a fare Gson↔file degli aggregati) né da view (che si limita a chiedere il percorso e stampare l'esito).
+- **Le proposte scartate restano innocue in memoria.** `creaProposta` le aggiunge alla lista di sessione con stato `null`/non-VALIDA: non vengono mai persistite (filtro di `ArchivioProposte.salvaTutte`), non compaiono in bacheca né in archivio. Stesso comportamento del flusso interattivo quando l'utente crea una proposta non valida.
+
+**Dataset demo (`data-demo/`, tracciato da Git):** generato con `GeneratoreDatasetDemo` (in `src/test/java`, strumento riutilizzabile, non un test JUnit) usando TempoSimulato + motore transizioni esistente; contiene 2 configuratori, 3 fruitori, 2 categorie e 8 proposte (3 APERTA, 2 CONFERMATA, 1 CONCLUSA, 1 ANNULLATA, 1 RITIRATA via `ritira()`), più `tempo.json` che congela la data simulata al 2026-09-01 per rendere la demo stabile nel tempo, e `import-esempio.json` per dimostrare la voce 15 (contiene un elemento volutamente non valido per mostrare il continua-e-riporta). Procedura di caricamento in `docs/manuale/manuale.md`, verificata end-to-end.
+
+**Documentazione:** `docs/manuale/manuale.md` (installazione, avvio, dati demo, guida ai menu, note sul tempo simulato) e `docs/riepilogo-classi-finale.md` (riepilogo classi + casi d'uso unificati V1–V5 per i diagrammi UML globali).
+
+**Non ancora iniziato:**
+- Diagrammi UML globali (classi e casi d'uso) — a cura di Inder, sulla base di `docs/riepilogo-classi-finale.md`
